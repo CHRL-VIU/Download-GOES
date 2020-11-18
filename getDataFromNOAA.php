@@ -13,7 +13,6 @@ if (mysqli_connect_errno()) {
 /* Add redirection so we can get stderr. */
 
 $output = shell_exec(CMD);
-print_r($output);
 $array = explode("@", $output);
 
 foreach ($array as $line) {
