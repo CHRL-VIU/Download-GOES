@@ -16,7 +16,6 @@ if (mysqli_connect_errno()) {
   exit;
 }
 
-
 /* Add redirection so we can get stderr. */
 
 $output = shell_exec( "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"$$$\"");
@@ -44,7 +43,6 @@ foreach ($array as $line) {
     // remove empty line at end of array 
     array_pop($lineArray);
 
-    print_r($lineArray);
     // create string from array elements in current line
     $datString = implode("','", $lineArray);
 
