@@ -1,15 +1,9 @@
 <?php
 require 'config.php';
 
-$msg = 'C:/LRGSClient/bin/getDcpMessages.bat';
 $fields = "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB";
 
 $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
-
-if (!file_exists($msg)) {
-        echo "File not found. Make sure you specified the correct path.\n";
-        exit;
-}
 
 if (mysqli_connect_errno()) {
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
