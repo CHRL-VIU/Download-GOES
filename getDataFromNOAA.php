@@ -1,7 +1,15 @@
 <?php
+// this script queries the NOAA server using LRGS scripts available here https://dcs1.noaa.gov/Account/Login
+
+// get the creds
 require 'config.php';
 
 $fields = "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB";
+
+// excecute NOAA LRGS Script
+$output = shell_exec(CMD);
+
+$array = explode("@", $output);
 
 $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
 
@@ -9,11 +17,6 @@ if (mysqli_connect_errno()) {
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
   exit;
 }
-
-/* Add redirection so we can get stderr. */
-
-$output = shell_exec(CMD);
-$array = explode("@", $output);
 
 foreach ($array as $line) {
     if($line == ""){
