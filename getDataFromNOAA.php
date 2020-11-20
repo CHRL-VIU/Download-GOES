@@ -2,7 +2,7 @@
 // this script queries the NOAA server using LRGS scripts available here https://dcs1.noaa.gov/Account/Login
 
 // get the creds
-require 'config_temp.php';
+require 'config.php';
 
 // update search criteria file based on provided NESID 
 function updateNesid ($SEARCHFILE, $NESID) {
@@ -186,9 +186,6 @@ $cleanFields = array(
   )
 );
 
-
-
-
 $fileName = 'C:/LRGSClient/MessageBrowser.sc';
 
 //loop through NESIDs to query
@@ -200,7 +197,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 720; 
+$numRowsToClean = 3; 
 
 foreach ($nesids as $curStation => $nesid) {
     //select from bottom of table and skip the first row of the query defined in the first line under the calcs section
