@@ -186,7 +186,7 @@ $cleanFields = array(
   )
 );
 
-$fileName = 'C:/LRGSClient/MessageBrowser.sc';
+$fileName = '/LRGS/MessageBrowser.sc';
 
 //loop through NESIDs to query
 foreach ($nesids as $name => $id){
