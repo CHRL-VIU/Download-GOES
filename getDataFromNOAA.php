@@ -186,7 +186,7 @@ $cleanFields = array(
   )
 );
 
-$fileName = '/LRGS/MessageBrowser';
+$fileName = '/LRGS/MessageBrowser.sc';
 
 //loop through NESIDs to query
 foreach ($nesids as $name => $id){
@@ -223,7 +223,6 @@ foreach ($nesids as $curStation => $nesid) {
       $cleanNames = implode(",", $cleanFields[$curStation]);
 
       $query = "INSERT IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
-      print_r($query);
 
       $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
 
