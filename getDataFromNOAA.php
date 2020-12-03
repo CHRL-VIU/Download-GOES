@@ -5,6 +5,12 @@
 require 'config.php';
 
 // update search criteria file based on provided NESID 
+// file format is: 
+// DRS_SINCE: now - 180 minutes
+// DRS_UNTIL: now
+// DCP_ADDRESS: 49A0216E
+// located at /LRGS/MessageBrowser.sc
+
 function updateNesid ($SEARCHFILE, $NESID) {
         $searchCritRaw = file_get_contents($SEARCHFILE); // reads an array of lines
         $searchCritNew = (substr_replace($searchCritRaw, $NESID, -10, 8));
@@ -186,12 +192,19 @@ $cleanFields = array(
   )
 );
 
+// update search criteria file based on provided NESID 
+// file format is: 
+// DRS_SINCE: now - 180 minutes
+// DRS_UNTIL: now
+// DCP_ADDRESS: 49A0216E
+// located at /LRGS/MessageBrowser.sc
+
 $fileName = '/LRGS/MessageBrowser.sc';
 
 //loop through NESIDs to query
 foreach ($nesids as $name => $id){
         updateNesid($fileName, $id); // update search crit file to query current file
-        $output = shell_exec(CMD);
+        $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
         parseDataFromNOAA($output, $name, $fields);
 }
 
@@ -211,7 +224,7 @@ foreach ($nesids as $curStation => $nesid) {
       if($curStation == "uppercruickshank"){
         $filterArray['SDepth'] = $filterArray['SDepth'] + 572.1; // offset eyeballed by alex from raw data
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
-
+        $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
 
 
