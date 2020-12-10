@@ -11,6 +11,24 @@ require 'config.php';
 // DCP_ADDRESS: 49A0216E
 // located at /LRGS/MessageBrowser.sc
 
+function wtr_yr ($DATETIME, $START_MONTH=10) {
+  # Convert dates into POSIXlt
+  $datetime = strtotime($DATETIME);
+  $curYear = date("Y", $datetime);
+  $curMonth= date("m",$datetime);
+  # Year offset
+  if($curMonth >= $START_MONTH){
+    $offset = 1;
+  }
+  else{$offset = 0;}
+
+  # water year
+  $adjYear = $curYear+$offset;
+
+  # return water year
+  return $adjYear;
+} 
+
 function updateNesid ($SEARCHFILE, $NESID) {
         $searchCritRaw = file_get_contents($SEARCHFILE); // reads an array of lines
         $searchCritNew = (substr_replace($searchCritRaw, $NESID, -10, 8));
@@ -155,6 +173,7 @@ $filterFields = array(
 $cleanFields = array(
   "uppercruickshank" => array(
     "DateTime",
+    "WatYr",
     "RH",
     "Air_Temp",
     "Pk_Wind_Speed",
@@ -178,6 +197,7 @@ $cleanFields = array(
 
   "cainridgerun" => array(
     "DateTime",
+    "WatYr",
     "RH",
     "Air_Temp",
     "Pk_Wind_Speed",
@@ -199,7 +219,7 @@ $cleanFields = array(
 // DCP_ADDRESS: 49A0216E
 // located at /LRGS/MessageBrowser.sc
 
-$fileName = '/LRGS/MessageBrowser.sc';
+$fileName = 'C:/LRGSClient/MessageBrowser.sc';
 
 //loop through NESIDs to query
 foreach ($nesids as $name => $id){
@@ -210,7 +230,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 3; 
+$numRowsToClean = 800; 
 
 foreach ($nesids as $curStation => $nesid) {
     //select from bottom of table and skip the first row of the query defined in the first line under the calcs section
@@ -227,15 +247,19 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
 
+      $curDateTime = $line["DateTime"];
+      $curWatYr = wtr_yr($curDateTime, 10); // calc wat yr
 
+      $finalArray = array_slice($filterArray, 0, 1, TRUE) + array("WatYr" => $curWatYr) + array_slice($filterArray, 1, 20, TRUE); // add in water year
 
       // convert clean array to a string                    
-      $string = implode("','", $filterArray);
+      $string = implode("','", $finalArray);
 
       // grab list of fields with the clean_ names 
       $cleanNames = implode(",", $cleanFields[$curStation]);
 
-      $query = "INSERT IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
+      $query = "UPDATE `clean_$curStation` SET WatYr = $curWatYr WHERE DateTime = '$curDateTime'";
+      //$query = "INSERT IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
 
       $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
 
