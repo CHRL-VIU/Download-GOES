@@ -219,14 +219,14 @@ $cleanFields = array(
 // DCP_ADDRESS: 49A0216E
 // located at /LRGS/MessageBrowser.sc
 
-// $fileName = '/LRGS/MessageBrowser.sc';
+$fileName = '/LRGS/MessageBrowser.sc';
 
-// //loop through NESIDs to query
-// foreach ($nesids as $name => $id){
-//         updateNesid($fileName, $id); // update search crit file to query current file
-//         $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
-//         parseDataFromNOAA($output, $name, $fields);
-// }
+//loop through NESIDs to query
+foreach ($nesids as $name => $id){
+        updateNesid($fileName, $id); // update search crit file to query current file
+        $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
+        parseDataFromNOAA($output, $name, $fields);
+}
 
 // Start Clean Table update
 
@@ -258,8 +258,8 @@ foreach ($nesids as $curStation => $nesid) {
       // grab list of fields with the clean_ names 
       $cleanNames = implode(",", $cleanFields[$curStation]);
 
-      $query = "UPDATE `clean_$curStation` SET WatYr = $curWatYr WHERE DateTime = '$curDateTime'";
-      //$query = "INSERT IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
+      //$query = "UPDATE `clean_$curStation` SET WatYr = $curWatYr WHERE DateTime = '$curDateTime'";
+      $query = "INSERT IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
 
       $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
 
