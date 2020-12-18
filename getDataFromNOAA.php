@@ -113,7 +113,7 @@ $nesids = array(
     // "claytonfalls" => "BCF070F8",
     // "homathko" => "434BC438",
     // "klinaklini" => "4900B25A",
-    // "lowercain" => "49004C0C",
+     "lowercain" => "49004C0C",
     // //"machmell" => "",
     // "machmellkliniklini" => "BCF05614",
     // "mountarrowsmith" => "490051A8",
@@ -125,7 +125,8 @@ $nesids = array(
 // these are the fields as they come in directly from noaa and will be uploaded to the raw_ tables
 $fields = array(
   "uppercruickshank" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB"
+  "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
+  "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB"
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
@@ -167,6 +168,19 @@ $filterFields = array(
     'PYR', 
     'VB'
     ),
+
+    "lowercain" => array(
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'PYR', 
+    'SW', 
+    'PC', 
+    'VB' 
+  )
 );
 
 // list of fields that match the clean_ tables
@@ -209,6 +223,19 @@ $cleanFields = array(
     "Snow_Depth",
     "Solar_Rad",
     "Batt"
+  ),
+  "lowercain" => array(
+    "DateTime",
+    "WatYr",
+    "RH",
+    "Air_Temp",
+    "PP_Tipper",
+    "PC_Tipper",
+    "Snow_Depth",
+    "Solar_Rad",
+    "SWE",
+    "PC_Raw_Pipe",
+    "Batt"
   )
 );
 
@@ -230,7 +257,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 800; 
+$numRowsToClean = 25; 
 
 foreach ($nesids as $curStation => $nesid) {
     //select from bottom of table and skip the first row of the query defined in the first line under the calcs section
