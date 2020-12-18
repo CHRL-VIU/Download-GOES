@@ -108,7 +108,7 @@ function getMySQLRows($stationName, $numRows) {
 
 $nesids = array(
     "uppercruickshank" => "49008912",
-    "cainridgerun" => "49A0216E"
+    "cainridgerun" => "49A0216E",
     // "apelake" => "BCF680B2",
     // "claytonfalls" => "BCF070F8",
     // "homathko" => "434BC438",
