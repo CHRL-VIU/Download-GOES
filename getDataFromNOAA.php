@@ -110,10 +110,10 @@ $nesids = array(
     "uppercruickshank" => "49008912",
     "cainridgerun" => "49A0216E",
     // "apelake" => "BCF680B2",
-    // "claytonfalls" => "BCF070F8",
+    "claytonfalls" => "BCF070F8",
     // "homathko" => "434BC438",
     // "klinaklini" => "4900B25A",
-     "lowercain" => "49004C0C",
+    "lowercain" => "49004C0C",
     // //"machmell" => "",
     // "machmellkliniklini" => "BCF05614",
     "mountarrowsmith" => "490051A8"
@@ -127,7 +127,8 @@ $fields = array(
   "uppercruickshank" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
   "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
   "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, CNR_T_15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB"
+  "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, CNR_T_15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
+  "claytonfalls" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG"
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
@@ -153,6 +154,7 @@ $commonFilterFields = array(
     'SW', 
     'PC', 
     'VB');
+
 $filterFields = array(
     "uppercruickshank" => $commonFilterFields,
 
@@ -184,8 +186,26 @@ $filterFields = array(
     'VB' 
     ),
     
-    "mountarrowsmith" => $commonFilterFields
-  
+    "mountarrowsmith" => $commonFilterFields,
+
+    "claytonfalls" => array(
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Mx_Spd', 
+    'Mx_Dir', 
+    'Wspd', 
+    'Dir', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'BP', 
+    'PYR', 
+    'SW_SSG', 
+    'Pcp1hr',
+    'Pcp_raw', 
+    'Vtx' // no batt volt so take with grain of salt
+    )
 );
 
 // list of fields that match the clean_ tables
@@ -213,8 +233,7 @@ $commonCleanFields = array(
     "Batt");
 
 $cleanFields = array(
-  "uppercruickshank" => $commonFilterFields,
-
+  "uppercruickshank" => $commonCleanFields,
 
   "cainridgerun" => array(
     "DateTime",
@@ -245,7 +264,27 @@ $cleanFields = array(
     "Batt"
   ),
 
-  "mountarrowsmith" => $commonCleanFields
+  "mountarrowsmith" => $commonCleanFields,
+
+  "claytonfalls" => array(
+  'DateTime', 
+  "WatYr",
+  'RH', 
+  'Air_Temp', 
+  "Pk_Wind_Speed",
+  "Pk_Wind_Dir",
+  "Wind_Speed",
+  "Wind_Dir",
+  "PP_Tipper",
+  "PC_Tipper",
+  'Snow_Depth', 
+  'BP', 
+  'Solar_Rad', 
+  'SWE', 
+  'PP_Pipe',
+  'PC_Raw_Pipe', 
+  'Batt' // no batt volt so take with grain of salt
+  )
 
 );
 
@@ -284,8 +323,8 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
 
-              // arrowsmith defs
-      if($curStation == "mountarrowsmith"){
+      // convert air pressure but not at cain
+      if($curStation != "lowercain" or $curStation != "cainridgerun"){
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
       }
 
