@@ -107,13 +107,13 @@ function getMySQLRows($stationName, $numRows) {
 }
 
 $nesids = array(
-    //"uppercruickshank" => "49008912",
-    //"cainridgerun" => "49A0216E",
+    "uppercruickshank" => "49008912",
+    "cainridgerun" => "49A0216E",
     // "apelake" => "BCF680B2",
     // "claytonfalls" => "BCF070F8",
     // "homathko" => "434BC438",
     // "klinaklini" => "4900B25A",
-    // "lowercain" => "49004C0C",
+     "lowercain" => "49004C0C",
     // //"machmell" => "",
     // "machmellkliniklini" => "BCF05614",
     "mountarrowsmith" => "490051A8"
@@ -267,7 +267,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 25; 
+$numRowsToClean = 120; 
 
 foreach ($nesids as $curStation => $nesid) {
     //select from bottom of table and skip the first row of the query defined in the first line under the calcs section
