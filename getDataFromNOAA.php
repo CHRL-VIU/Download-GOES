@@ -308,6 +308,10 @@ foreach ($nesids as $name => $id){
 
 $numRowsToClean = 25; 
 
+// stns to convert kpa 
+
+$stnToKpa = array("lowercain", "cainridgerun");
+
 foreach ($nesids as $curStation => $nesid) {
     //select from bottom of table and skip the first row of the query defined in the first line under the calcs section
     $rawRows = getMySQLRows("raw_$curStation", $numRowsToClean);
@@ -324,7 +328,7 @@ foreach ($nesids as $curStation => $nesid) {
       }
 
       // convert air pressure but not at cain
-      if($curStation != "lowercain" or $curStation != "cainridgerun"){
+      if(!in_array($curStation, $stnToKpa)){
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
       }
 
