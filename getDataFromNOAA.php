@@ -107,13 +107,13 @@ function getMySQLRows($stationName, $numRows) {
 }
 
 $nesids = array(
-    "uppercruickshank" => "49008912",
-    "cainridgerun" => "49A0216E",
+    //"uppercruickshank" => "49008912",
+    //"cainridgerun" => "49A0216E",
     // "apelake" => "BCF680B2",
     // "claytonfalls" => "BCF070F8",
     // "homathko" => "434BC438",
     // "klinaklini" => "4900B25A",
-     "lowercain" => "49004C0C",
+    // "lowercain" => "49004C0C",
     // //"machmell" => "",
     // "machmellkliniklini" => "BCF05614",
     "mountarrowsmith" => "490051A8"
@@ -282,6 +282,11 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['SDepth'] = $filterArray['SDepth'] + 572.1; // offset eyeballed by alex from raw data
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
+      }
+
+              // arrowsmith defs
+      if($curStation == "mountarrowsmith"){
+        $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
       }
 
       $curDateTime = $line["DateTime"];
