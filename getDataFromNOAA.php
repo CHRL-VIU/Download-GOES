@@ -116,7 +116,7 @@ $nesids = array(
      "lowercain" => "49004C0C",
     // //"machmell" => "",
     // "machmellkliniklini" => "BCF05614",
-    // "mountarrowsmith" => "490051A8",
+    "mountarrowsmith" => "490051A8"
     // "mountcayley" => "BCF00668", 
     // "perseverance" => "49006AE0",
     // "tetrahedron" => "4900A12C"
@@ -126,12 +126,13 @@ $nesids = array(
 $fields = array(
   "uppercruickshank" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
   "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
-  "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB"
+  "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
+  "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, CNR_T_15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB"
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
-$filterFields = array(
-  "uppercruickshank" => array(
+// for repeating station definitions
+$commonFilterFields = array(
     'DateTime', 
     'RH', 
     'Temp', 
@@ -151,8 +152,9 @@ $filterFields = array(
     'LWLavg15m', 
     'SW', 
     'PC', 
-    'VB' 
-  ),
+    'VB');
+$filterFields = array(
+    "uppercruickshank" => $commonFilterFields,
 
     "cainridgerun" => array(
     'DateTime', 
@@ -180,12 +182,14 @@ $filterFields = array(
     'SW', 
     'PC', 
     'VB' 
-  )
+    ),
+    
+    "mountarrowsmith" => $commonFilterFields
+  
 );
 
 // list of fields that match the clean_ tables
-$cleanFields = array(
-  "uppercruickshank" => array(
+$commonCleanFields = array(    
     "DateTime",
     "WatYr",
     "RH",
@@ -206,8 +210,11 @@ $cleanFields = array(
     "LWL",
     "SWE",
     "PC_Raw_Pipe",
-    "Batt"
-  ),
+    "Batt");
+
+$cleanFields = array(
+  "uppercruickshank" => $commonFilterFields,
+
 
   "cainridgerun" => array(
     "DateTime",
@@ -236,7 +243,10 @@ $cleanFields = array(
     "SWE",
     "PC_Raw_Pipe",
     "Batt"
-  )
+  ),
+
+  "mountarrowsmith" => $commonCleanFields
+
 );
 
 // update search criteria file based on provided NESID 
