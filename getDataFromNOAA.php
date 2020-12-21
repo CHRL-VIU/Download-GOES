@@ -267,7 +267,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 120; 
+$numRowsToClean = 25; 
 
 foreach ($nesids as $curStation => $nesid) {
     //select from bottom of table and skip the first row of the query defined in the first line under the calcs section
