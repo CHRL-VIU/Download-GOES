@@ -76,7 +76,7 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
       $query = "insert ignore into `raw_$stnname` ($fields) values('$datString')";
 
       if (!mysqli_query($conn, $query)) {
-      exit("Insert Query Error description: " . mysqli_error($conn));
+      exit("Update Raw Tbl Error description: " . mysqli_error($conn));
       }
   }
 
@@ -250,12 +250,12 @@ $firstGenCleanFields = array(
   "PP_Tipper",
   "PC_Tipper",
   'Snow_Depth', 
-  'BP', 
   'Solar_Rad', 
-  'SWE', 
+  'BP', 
+  'Batt',
   'PP_Pipe',
   'PC_Raw_Pipe', 
-  'Batt' 
+  'SWE'
 );
 
 // common clean table defs for newer wx stns
@@ -362,7 +362,6 @@ foreach ($nesids as $curStation => $nesid) {
       // offset cruickshank snow depth + adj BP
       if($curStation == "uppercruickshank"){
         $filterArray['SDepth'] = $filterArray['SDepth'] + 572.1; // offset eyeballed by alex from raw data
-        $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
 
@@ -394,7 +393,7 @@ foreach ($nesids as $curStation => $nesid) {
 
       // import to clean tbl 
       if (!mysqli_query($conn, $query)) {
-          exit("Insert Query Error description: " . mysqli_error($conn));
+          exit("Update Clean Table Error description: " . mysqli_error($conn));
       }
     }
 }
