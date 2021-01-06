@@ -76,7 +76,7 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
       $query = "insert ignore into `raw_$stnname` ($fields) values('$datString')";
 
       if (!mysqli_query($conn, $query)) {
-      exit("Update Raw Tbl Error description: " . mysqli_error($conn));
+      exit("Update ".$stnname." Raw Tbl Error description: " . mysqli_error($conn));
       }
   }
 
@@ -324,7 +324,7 @@ $cleanFields = array(
 
   "klinaklini" => $secGenCleanFields,
 
-  "machmellkliniklini" => $secGenCleanFields
+  "machmellkliniklini" => $firstGenCleanFields
 );
 
 // update search criteria file based on provided NESID 
@@ -393,7 +393,7 @@ foreach ($nesids as $curStation => $nesid) {
 
       // import to clean tbl 
       if (!mysqli_query($conn, $query)) {
-          exit("Update Clean Table Error description: " . mysqli_error($conn));
+          exit("Update ".$curStation." Clean Table Error description: " . mysqli_error($conn));
       }
     }
 }
