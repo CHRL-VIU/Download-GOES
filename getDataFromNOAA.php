@@ -147,7 +147,7 @@ $fields = array(
 
   "mountcayley" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SM, ST, Pcp1hr, Pcp_raw",
   "perseverance" => $secGenFtsRawFeilds,
-  "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB, SD2",
+  "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB",
   "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB"
 );
 
