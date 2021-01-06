@@ -345,7 +345,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 500; 
+$numRowsToClean = 24; 
 
 // stns to convert kpa 
 
