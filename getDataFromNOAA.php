@@ -116,10 +116,11 @@ $nesids = array(
     "lowercain" => "49004C0C",
     // //"machmell" => "",
     "machmellkliniklini" => "BCF05614",
-    "mountarrowsmith" => "490051A8"
-    // "mountcayley" => "BCF00668", 
-    // "perseverance" => "49006AE0",
-    // "tetrahedron" => "4900A12C"
+    "mountarrowsmith" => "490051A8",
+    "mountcayley" => "BCF00668",
+    "perseverance" => "49006AE0",
+    "tetrahedron" => "4900A12C",
+    "plummerhut" => "49007996"
 );
 
 // these are the fields as they come in directly from noaa and will be uploaded to the raw_ tables
@@ -143,6 +144,11 @@ $fields = array(
   "homathko" => $secGenFtsRawFeilds,
   "klinaklini" => $secGenFtsRawFeilds,
   "uppercruickshank" => $secGenFtsRawFeilds,
+
+  "mountcayley" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SM, ST, Pcp1hr, Pcp_raw",
+  "perseverance" => $secGenFtsRawFeilds,
+  "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB",
+  "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB"
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
@@ -187,7 +193,8 @@ $secGenFilterFields = array(
     'LWLavg15m', 
     'SW', 
     'PC', 
-    'VB');
+    'VB'
+  );
 
     // put together
 $filterFields = array(
@@ -232,6 +239,70 @@ $filterFields = array(
     "homathko" => $secGenFilterFields,
 
     "klinaklini" => $secGenFilterFields,
+
+    "mountcayley" => array(
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Mx_Spd', 
+    'Mx_Dir', 
+    'Wspd', 
+    'Dir', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'BP', 
+    'PYR', 
+    'SM', 
+    'ST', 
+    'Pcp1hr',
+    'Pcp_raw', 
+    'Vtx' 
+    ),
+
+    "perseverance" => $secGenFilterFields,
+
+    "tetrahedron" => array(
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Mx_Spd', 
+    'Mx_Dir', 
+    'Wspd', 
+    'Dir', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'BP', 
+    'PYR', 
+    'SM', 
+    'ST', 
+    'SW_SSG', 
+    'Pcp1hr',
+    'Pcp_raw', 
+    'Vtx' 
+    ),
+
+    "plummerhut" => array(
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Mx_Spd', 
+    'Mx_Dir', 
+    'Wspd', 
+    'Dir', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'BP', 
+    'SM', 
+    'ST', 
+    'SWUavg15m', 
+    'SWLavg15m', 
+    'LWUavg15m', 
+    'LWLavg15m', 
+    'VB'
+    )
 
 );
 
@@ -280,7 +351,8 @@ $secGenCleanFields = array(
     "LWL",
     "SWE",
     "PC_Raw_Pipe",
-    "Batt");
+    "Batt"
+  );
 
 $cleanFields = array(
   "uppercruickshank" => $secGenCleanFields,
@@ -324,7 +396,75 @@ $cleanFields = array(
 
   "klinaklini" => $secGenCleanFields,
 
-  "machmellkliniklini" => $firstGenCleanFields
+  "machmellkliniklini" => $firstGenCleanFields,
+
+  "mountcayley" => array(
+  'DateTime', 
+  "WatYr",
+  'RH', 
+  'Air_Temp', 
+  "Pk_Wind_Speed",
+  "Pk_Wind_Dir",
+  "Wind_Speed",
+  "Wind_Dir",
+  "PP_Tipper",
+  "PC_Tipper",
+  'Snow_Depth', 
+  'BP', 
+  'Solar_Rad', 
+  "Soil_Moisture",
+  "Soil_Temperature",
+  'PP_Pipe',
+  'PC_Raw_Pipe',
+  'Batt',
+  ),
+
+  "perseverance" => $secGenCleanFields,
+
+  "tetrahedron" => array(
+  'DateTime', 
+  "WatYr",
+  'RH', 
+  'Air_Temp', 
+  "Pk_Wind_Speed",
+  "Pk_Wind_Dir",
+  "Wind_Speed",
+  "Wind_Dir",
+  "PP_Tipper",
+  "PC_Tipper",
+  'Snow_Depth', 
+  'BP',
+  'Solar_Rad', 
+  "Soil_Moisture",
+  "Soil_Temperature",
+  'SWE', 
+  'PP_Pipe',
+  'PC_Raw_Pipe',
+  'Batt', 
+  ),
+
+  "plummerhut" => array(
+    "DateTime",
+    "WatYr",
+    "RH",
+    "Air_Temp",
+    "Pk_Wind_Speed",
+    "Pk_Wind_Dir",
+    "Wind_Speed",
+    "Wind_Dir",
+    "PP_Tipper",
+    "PC_Tipper",
+    "Snow_Depth",
+    "BP",
+    "Soil_Moisture",
+    "Soil_Temperature",
+    "SWU",
+    "SWL",
+    "LWU",
+    "LWL",
+    "Batt"
+  )
+
 );
 
 // update search criteria file based on provided NESID 
