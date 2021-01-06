@@ -109,7 +109,7 @@ function getMySQLRows($stationName, $numRows) {
 $nesids = array(
     "uppercruickshank" => "49008912",
     "cainridgerun" => "49A0216E",
-    // "apelake" => "BCF680B2",
+    "apelake" => "BCF680B2",
     "claytonfalls" => "BCF070F8",
     // "homathko" => "434BC438",
     // "klinaklini" => "4900B25A",
@@ -128,7 +128,8 @@ $fields = array(
   "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
   "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
   "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, CNR_T_15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "claytonfalls" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG"
+  "claytonfalls" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG",
+  "apelake" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG"
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
@@ -205,7 +206,26 @@ $filterFields = array(
     'Pcp1hr',
     'Pcp_raw', 
     'Vtx' // no batt volt so take with grain of salt
-    )
+    ),
+
+    "apelake" => array( // same as clayton falls
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Mx_Spd', 
+    'Mx_Dir', 
+    'Wspd', 
+    'Dir', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'BP', 
+    'PYR', 
+    'SW_SSG', 
+    'Pcp1hr',
+    'Pcp_raw', 
+    'Vtx' 
+    ),   
 );
 
 // list of fields that match the clean_ tables
@@ -284,8 +304,27 @@ $cleanFields = array(
   'PP_Pipe',
   'PC_Raw_Pipe', 
   'Batt' // no batt volt so take with grain of salt
-  )
+  ),
 
+  "apelake" => array( // same as clayton falls
+  'DateTime', 
+  "WatYr",
+  'RH', 
+  'Air_Temp', 
+  "Pk_Wind_Speed",
+  "Pk_Wind_Dir",
+  "Wind_Speed",
+  "Wind_Dir",
+  "PP_Tipper",
+  "PC_Tipper",
+  'Snow_Depth', 
+  'BP', 
+  'Solar_Rad', 
+  'SWE', 
+  'PP_Pipe',
+  'PC_Raw_Pipe', 
+  'Batt' // no batt volt so take with grain of salt
+  )
 );
 
 // update search criteria file based on provided NESID 
@@ -306,7 +345,7 @@ foreach ($nesids as $name => $id){
 
 // Start Clean Table update
 
-$numRowsToClean = 200; 
+$numRowsToClean = 24; 
 
 // stns to convert kpa 
 
