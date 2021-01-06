@@ -111,11 +111,11 @@ $nesids = array(
     "cainridgerun" => "49A0216E",
     "apelake" => "BCF680B2",
     "claytonfalls" => "BCF070F8",
-    // "homathko" => "434BC438",
-    // "klinaklini" => "4900B25A",
+    "homathko" => "434BC438",
+    "klinaklini" => "4900B25A",
     "lowercain" => "49004C0C",
     // //"machmell" => "",
-    // "machmellkliniklini" => "BCF05614",
+    "machmellkliniklini" => "BCF05614",
     "mountarrowsmith" => "490051A8"
     // "mountcayley" => "BCF00668", 
     // "perseverance" => "49006AE0",
@@ -123,18 +123,51 @@ $nesids = array(
 );
 
 // these are the fields as they come in directly from noaa and will be uploaded to the raw_ tables
+
+// common fields for older wx stns (i.e. clayton falls, ape lake, machmell klini) 
+$firstGenFtsRawFeilds = "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG";
+
+// common fields for newer wx stations (i.e. arrowsmith, cruickshank, klini, homathko)
+$secGenFtsRawFeilds = "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB";
+
+// put all raw stn fields together into array
 $fields = array(
-  "uppercruickshank" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
+  "claytonfalls" => $firstGenFtsRawFeilds,
+  "apelake" => $firstGenFtsRawFeilds,
+  "machmellkliniklini" => $firstGenFtsRawFeilds
+  
   "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
   "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, CNR_T_15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "claytonfalls" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG",
-  "apelake" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG"
+  
+  "mountarrowsmith" => $secGenFtsRawFeilds,
+  "homathko" => $secGenFtsRawFeilds,
+  "klinaklini" => $secGenFtsRawFeilds,
+  "uppercruickshank" => $secGenFtsRawFeilds,
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
-// for repeating station definitions
-$commonFilterFields = array(
+// for common older station defs
+$firstGenFilterFields = array(
+    'DateTime', 
+    'RH', 
+    'Temp', 
+    'Mx_Spd', 
+    'Mx_Dir', 
+    'Wspd', 
+    'Dir', 
+    'Rn_1', 
+    'RnTotal', 
+    'SDepth', 
+    'BP', 
+    'PYR', 
+    'SW_SSG', 
+    'Pcp1hr',
+    'Pcp_raw', 
+    'Vtx' 
+);
+
+// for repeating newer station definitions
+$secGenFilterFields = array(
     'DateTime', 
     'RH', 
     'Temp', 
@@ -156,8 +189,9 @@ $commonFilterFields = array(
     'PC', 
     'VB');
 
+    // put together
 $filterFields = array(
-    "uppercruickshank" => $commonFilterFields,
+    "uppercruickshank" => $secGenFilterFields,
 
     "cainridgerun" => array(
     'DateTime', 
@@ -187,49 +221,45 @@ $filterFields = array(
     'VB' 
     ),
     
-    "mountarrowsmith" => $commonFilterFields,
+    "mountarrowsmith" => $secGenFilterFields,
 
-    "claytonfalls" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'PYR', 
-    'SW_SSG', 
-    'Pcp1hr',
-    'Pcp_raw', 
-    'Vtx' // no batt volt so take with grain of salt
-    ),
+    "claytonfalls" => $firstGenFilterFields,
 
-    "apelake" => array( // same as clayton falls
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'PYR', 
-    'SW_SSG', 
-    'Pcp1hr',
-    'Pcp_raw', 
-    'Vtx' 
-    ),   
+    "machmellkliniklini" => $firstGenFilterFields,
+
+    "apelake" => $firstGenFilterFields,   
+
+    "homathko" => $secGenFilterFields,
+
+    "klinaklini" => $secGenFilterFields,
+
 );
 
 // list of fields that match the clean_ tables
-$commonCleanFields = array(    
+
+// common clean table defs for older wx stns
+$firstGenCleanFields = array(
+  'DateTime', 
+  "WatYr",
+  'RH', 
+  'Air_Temp', 
+  "Pk_Wind_Speed",
+  "Pk_Wind_Dir",
+  "Wind_Speed",
+  "Wind_Dir",
+  "PP_Tipper",
+  "PC_Tipper",
+  'Snow_Depth', 
+  'BP', 
+  'Solar_Rad', 
+  'SWE', 
+  'PP_Pipe',
+  'PC_Raw_Pipe', 
+  'Batt' 
+);
+
+// common clean table defs for newer wx stns
+$secGenCleanFields = array(    
     "DateTime",
     "WatYr",
     "RH",
@@ -253,7 +283,7 @@ $commonCleanFields = array(
     "Batt");
 
 $cleanFields = array(
-  "uppercruickshank" => $commonCleanFields,
+  "uppercruickshank" => $secGenCleanFields,
 
   "cainridgerun" => array(
     "DateTime",
@@ -284,47 +314,17 @@ $cleanFields = array(
     "Batt"
   ),
 
-  "mountarrowsmith" => $commonCleanFields,
+  "mountarrowsmith" => $secGenCleanFields,
 
-  "claytonfalls" => array(
-  'DateTime', 
-  "WatYr",
-  'RH', 
-  'Air_Temp', 
-  "Pk_Wind_Speed",
-  "Pk_Wind_Dir",
-  "Wind_Speed",
-  "Wind_Dir",
-  "PP_Tipper",
-  "PC_Tipper",
-  'Snow_Depth', 
-  'BP', 
-  'Solar_Rad', 
-  'SWE', 
-  'PP_Pipe',
-  'PC_Raw_Pipe', 
-  'Batt' // no batt volt so take with grain of salt
-  ),
+  "claytonfalls" => $firstGenCleanFields,
 
-  "apelake" => array( // same as clayton falls
-  'DateTime', 
-  "WatYr",
-  'RH', 
-  'Air_Temp', 
-  "Pk_Wind_Speed",
-  "Pk_Wind_Dir",
-  "Wind_Speed",
-  "Wind_Dir",
-  "PP_Tipper",
-  "PC_Tipper",
-  'Snow_Depth', 
-  'BP', 
-  'Solar_Rad', 
-  'SWE', 
-  'PP_Pipe',
-  'PC_Raw_Pipe', 
-  'Batt' // no batt volt so take with grain of salt
-  )
+  "apelake" => $firstGenCleanFields,
+
+  "homathko" => $secGenCleanFields,
+
+  "klinaklini" => $secGenCleanFields,
+
+  "machmellkliniklini" => $secGenCleanFields
 );
 
 // update search criteria file based on provided NESID 
