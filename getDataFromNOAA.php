@@ -147,7 +147,7 @@ $fields = array(
 
   "mountcayley" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SM, ST, Pcp1hr, Pcp_raw",
   "perseverance" => $secGenFtsRawFeilds,
-  "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB",
+  "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB, SD2",
   "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB"
 );
 
@@ -432,13 +432,13 @@ $cleanFields = array(
   "PP_Tipper",
   "PC_Tipper",
   'Snow_Depth', 
-  'BP',
   'Solar_Rad', 
+  'BP',
+  'Batt',
+  'SWE',  
   "Soil_Moisture",
   "Soil_Temperature",
-  'SWE', 
-  'PC_Raw_Pipe',
-  'Batt' 
+  'PC_Raw_Pipe'
   ),
 
   "plummerhut" => array(
