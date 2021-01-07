@@ -277,9 +277,8 @@ $filterFields = array(
     'PYR', 
     'SM', 
     'ST', 
-    'SW_SSG', 
-    'Pcp1hr',
-    'Pcp_raw', 
+    'SW', 
+    'PC', 
     'Vtx' 
     ),
 
@@ -438,9 +437,8 @@ $cleanFields = array(
   "Soil_Moisture",
   "Soil_Temperature",
   'SWE', 
-  'PP_Pipe',
   'PC_Raw_Pipe',
-  'Batt', 
+  'Batt' 
   ),
 
   "plummerhut" => array(
