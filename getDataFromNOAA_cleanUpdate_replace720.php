@@ -27,7 +27,7 @@ require 'noaa_functions.php';
 
 // Start Clean Table update
 
-$numRowsToClean = 720; 
+$numRowsToClean = 900; 
 
 // stns to convert kpa 
 
@@ -69,7 +69,7 @@ foreach ($nesids as $curStation => $nesid) {
       $cleanNames = implode(",", $cleanFields[$curStation]);
 
       //$query = "UPDATE `clean_$curStation` SET WatYr = $curWatYr WHERE DateTime = '$curDateTime'";
-      $query = "REPLACE IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
+      $query = "REPLACE into `clean_$curStation` ($cleanNames) values('$string')";
 
       $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
 
