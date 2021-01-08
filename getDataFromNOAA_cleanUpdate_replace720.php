@@ -19,11 +19,11 @@ require 'noaa_functions.php';
 
 // start raw tbl update
 //loop through NESIDs to query
-foreach ($nesids as $name => $id){
-        updateNesid(LRGS_FILENAME, $id); // update search crit file to query current file
-        $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
-        parseDataFromNOAA($output, $name, $fields);
-}
+// foreach ($nesids as $name => $id){
+//         updateNesid(LRGS_FILENAME, $id); // update search crit file to query current file
+//         $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
+//         parseDataFromNOAA($output, $name, $fields);
+// }
 
 // Start Clean Table update
 
