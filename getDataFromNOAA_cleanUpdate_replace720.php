@@ -25,6 +25,25 @@ require 'noaa_functions.php';
 //         parseDataFromNOAA($output, $name, $fields);
 // }
 
+$nesids = array(
+    // "uppercruickshank" => "49008912",
+    // "cainridgerun" => "49A0216E",
+     "apelake" => "BCF680B2"
+    // "claytonfalls" => "BCF070F8",
+    // "homathko" => "434BC438",
+    // "klinaklini" => "4900B25A",
+    // "lowercain" => "49004C0C",
+    // // //"machmell" => "",
+    // "machmellkliniklini" => "BCF05614",
+    // "mountarrowsmith" => "490051A8",
+    // "mountcayley" => "BCF00668",
+    // "perseverance" => "49006AE0",
+    // "tetrahedron" => "4900A12C",
+    // "plummerhut" => "49007996"
+);
+
+
+
 // Start Clean Table update
 
 $numRowsToClean = 900; 
