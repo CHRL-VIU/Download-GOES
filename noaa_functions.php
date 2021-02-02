@@ -43,6 +43,8 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
   
   $fields = $fieldsArray[$stnname];
 
+  $field_length = count(explode(", ", $fields));
+
   $array = explode("@", $rawOutput); // turn raw string into array for each timestamped transmission which are separated by "@" defined in the config. 
 
   // loop through each tx and return a line of data compatible with our db 
@@ -52,6 +54,10 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
       }
 
       $lineArray = preg_split('/[\s]+/', $line); // split up the string by line breaks and creates an array with each tx variable in each array element
+
+      if(count($lineArray) < $field_length){
+          continue; // skip incomplete transmissions
+      }
 
       // grab elements needed for date
       $hr = substr($lineArray[0], 13, 2);
