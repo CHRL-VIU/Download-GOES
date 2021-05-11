@@ -55,10 +55,6 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
 
       $lineArray = preg_split('/[\s]+/', $line); // split up the string by line breaks and creates an array with each tx variable in each array element
 
-      if(count($lineArray) < $field_length){
-          continue; // skip incomplete transmissions
-      }
-
       // grab elements needed for date
       $hr = substr($lineArray[0], 13, 2);
       $yr = "20" . substr($lineArray[0], 8, 2);
@@ -72,6 +68,10 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
       array_unshift($lineArray, $datetime);
       // remove empty line at end of array 
       array_pop($lineArray);
+
+      if(count($lineArray) < $field_length){
+          continue; // skip incomplete transmissions
+      }
 
       // create string from array elements in current line
       $datString = implode("','", $lineArray);
