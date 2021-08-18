@@ -3,6 +3,7 @@
 
 // nesid list
 $nesids = array(
+    //"upperskeena" => "49A02FBC",
     "uppercruickshank" => "49008912",
     "cainridgerun" => "49A0216E",
     "apelake" => "BCF680B2",
@@ -45,9 +46,10 @@ $fields = array(
   "perseverance" => $secGenFtsRawFeilds,
   "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB, SD2",
   "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB"
+
 );
 
-// this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables
+// this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables. We need this additional step bc the names of the raw tbls != the clean tabes probably a more elegant solution with a named array or something.. 
 // for common older station defs
 $firstGenFilterFields = array(
     'DateTime', 
@@ -249,6 +251,7 @@ $secGenCleanFields = array(
     "Batt"
   );
 
+// we need this third step because not all stations transmit data for each of our clean table fields we could fill these in as NaNs on the data retrival script but this was just as easy
 $cleanFields = array(
   "uppercruickshank" => $secGenCleanFields,
 
