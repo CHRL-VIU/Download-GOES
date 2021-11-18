@@ -69,7 +69,7 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
       // remove empty line at end of array 
       array_pop($lineArray);
 
-      if(count($lineArray) < $field_length){
+      if(!count($lineArray) == $field_length){
           continue; // skip incomplete transmissions
       }
 
@@ -79,7 +79,8 @@ function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
       $query = "insert ignore into `raw_$stnname` ($fields) values('$datString')";
 
       if (!mysqli_query($conn, $query)) {
-      exit("Update ".$stnname." Raw Tbl Error description: " . mysqli_error($conn));
+      echo "Update ".$stnname." Raw Tbl Error description: " . mysqli_error($conn);
+      continue;
       }
   }
 

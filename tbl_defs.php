@@ -37,7 +37,7 @@ $fields = array(
   "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
   "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
   
-  "mountarrowsmith" => $secGenFtsRawFeilds,
+  "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, TA2, SW, SD, PC, VB, Ib, Vs, I_S, YB",
   "homathko" => $secGenFtsRawFeilds,
   "klinaklini" => $secGenFtsRawFeilds,
   "uppercruickshank" => $secGenFtsRawFeilds,

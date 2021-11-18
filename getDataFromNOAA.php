@@ -80,7 +80,8 @@ foreach ($nesids as $curStation => $nesid) {
 
       // import to clean tbl 
       if (!mysqli_query($conn, $query)) {
-          exit("Update ".$curStation." Clean Table Error description: " . mysqli_error($conn));
+          echo "Update ".$curStation." Clean Table Error description: " . mysqli_error($conn);
+          continue;
       }
     }
 }
