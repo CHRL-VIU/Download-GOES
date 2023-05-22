@@ -26,10 +26,10 @@ function wtr_yr ($DATETIME, $START_MONTH=10) {
   return $adjYear;
 } 
 
-function updateNesid ($SEARCHFILE, $NESID) {
-        $searchCritRaw = file_get_contents($SEARCHFILE); // reads an array of lines
+function updateNesid ($SEARCHFILE_IN, $SEARCHFILE_OUT, $NESID) {
+        $searchCritRaw = file_get_contents($SEARCHFILE_IN); // reads an array of lines
         $searchCritNew = (substr_replace($searchCritRaw, $NESID, -10, 8));
-        file_put_contents($SEARCHFILE, $searchCritNew);
+        file_put_contents($SEARCHFILE_OUT, $searchCritNew);
     }
 
 // function to parse raw NOAA output and insert a tx into our db

@@ -20,10 +20,13 @@ require 'noaa_functions.php';
 // start raw tbl update
 //loop through NESIDs to query
 foreach ($nesids as $name => $id){
-        updateNesid(LRGS_FILENAME, $id); // update search crit file to query current file
+        updateNesid(LRGS_QUERY_IN, LRGS_QUERY_OUT, $id); // update search crit file to query current file
+        echo "Starting the LRGS data request for station: " . $id. "\n";
         $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
         parseDataFromNOAA($output, $name, $fields);
 }
+
+echo "Finished the raw table update... starting the clean tables now...\n";
 
 // Start Clean Table update
 
@@ -92,5 +95,7 @@ foreach ($nesids as $curStation => $nesid) {
 }
 
 // free result set   
-mysqli_close($conn);
+mysqli_close($conn); 
+
+echo "Finished the raw and clean table update for all stations.";
 ?>
