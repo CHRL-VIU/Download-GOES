@@ -43,6 +43,12 @@ foreach ($nesids as $curStation => $nesid) {
     foreach ($rawRows as $line) {
       $filterKeys = array_flip($filterFields[$curStation]);
       $filterArray = array_intersect_key($line, $filterKeys); // note the resulting array here will match the ordering of the raw_tbls not the order of the filterFields Array 
+     // print("<pre>".print_r($filterArray,true)."</pre>");
+
+      // for all stations PC should not be greater or less than 9999, other vars behave much better and must have some filtering at the logger level but if this changes could copy this filtering for each possible variable in filterArray.
+      if(array_key_exists('PC', $filterArray) && abs($filterArray['PC']) > 9999){
+       $filterArray['PC'] = NULL;
+      }
 
       // offset cruickshank snow depth + adj BP
       if($curStation == "uppercruickshank"){
@@ -97,5 +103,5 @@ foreach ($nesids as $curStation => $nesid) {
 // free result set   
 mysqli_close($conn); 
 
-echo "Finished the raw and clean table update for all stations.";
+echo "Finished table updates for all stations.\n";
 ?>
