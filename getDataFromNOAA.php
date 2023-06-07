@@ -51,8 +51,9 @@ foreach ($nesids as $curStation => $nesid) {
       }
 
       // offset cruickshank snow depth + adj BP
+      // removed cruichshank offset june 7 2023 after someone changed the offset on the logger
       if($curStation == "uppercruickshank"){
-        $filterArray['SDepth'] = $filterArray['SDepth'] + 572.1; // offset eyeballed by alex from raw data
+        //$filterArray['SDepth'] = $filterArray['SDepth'] + 572.1; // offset eyeballed by alex from raw data
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
 
