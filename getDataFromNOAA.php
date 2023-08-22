@@ -58,7 +58,7 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['SDepth'] = $filterArray['SDepth'] - (609.7-572.1); // offset to counteract logger side attack 
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
-
+      
       // adjust tipping bucket at Tet + snow depth
       if($curStation == "tetrahedron"){
         $filterArray['Rn_1'] = $filterArray['Rn_1'] * 2; // offset eyeballed by alex from raw data
