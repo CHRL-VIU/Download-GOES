@@ -70,11 +70,6 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['SDepth'] = $filterArray['SDepth'] + 630; // offset eyeballed by alex from raw data
       }
 
-      // correct offset upperskeena snow depth + convert m to mm
-      if($curStation == "upperskeena"){
-        $filterArray['SDepth'] = ($filterArray['SDepth'] - 11.255) * 1000; // 
-      }
-
       // convert air pressure but not at cain
       if(!in_array($curStation, $stnToKpa)){
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
