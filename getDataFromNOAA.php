@@ -75,6 +75,11 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
       }
 
+      // correct offset upperskeena snow depth + convert m to mm
+      if($curStation == "upperskeena"){
+        $filterArray['SDepth'] = ($filterArray['SDepth'] - 11.255) * 1000; // 
+      }
+
       $curDateTime = $line["DateTime"];
       $curWatYr = wtr_yr($curDateTime, 10); // calc wat yr
 
