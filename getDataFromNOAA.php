@@ -75,9 +75,9 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
       }
 
-      // correct offset upperskeena snow depth + convert m to mm
+      // correct offset upperskeena PC Raw Pipe + convert m to mm
       if($curStation == "upperskeena"){
-        $filterArray['SDepth'] = ($filterArray['SDepth'] - 11.255) * 1000; // 
+        $filterArray['PC'] = ($filterArray['SDepth'] - 11.255) * 1000; // 
       }
 
       $curDateTime = $line["DateTime"];
