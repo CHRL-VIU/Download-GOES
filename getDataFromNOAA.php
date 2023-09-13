@@ -77,7 +77,7 @@ foreach ($nesids as $curStation => $nesid) {
 
       // correct offset upperskeena PC Raw Pipe + convert m to mm
       if($curStation == "upperskeena"){
-        $filterArray['PC'] = ($filterArray['SDepth'] - 11.255) * 1000; // 
+        $filterArray['PC'] = ($filterArray['PC'] - 11.255) * 1000; // 
       }
 
       $curDateTime = $line["DateTime"];
