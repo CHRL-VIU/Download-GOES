@@ -11,7 +11,7 @@ $nesids = array(
     "homathko" => "434BC438",
     "klinaklini" => "4900B25A",
     "lowercain" => "49004C0C",
-    "machmell" => "BCF05614",
+    // "machmell" => "BCF05614",
     "machmellkliniklini" => "BCF05614",
     "mountarrowsmith" => "490051A8",
     "mountcayley" => "BCF00668",
@@ -33,7 +33,7 @@ $fields = array(
   "claytonfalls" => $firstGenFtsRawFeilds,
   "apelake" => $firstGenFtsRawFeilds,
   "machmellkliniklini" => $firstGenFtsRawFeilds,
-  "machmell" => $firstGenFtsRawFeilds,
+  // "machmell" => $firstGenFtsRawFeilds,
   
   "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB",
   "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
@@ -133,7 +133,7 @@ $filterFields = array(
 
     "machmellkliniklini" => $firstGenFilterFields,
 
-    "machmell" => $firstGenFilterFields,
+    // "machmell" => $firstGenFilterFields,
 
     "apelake" => $firstGenFilterFields,   
 
@@ -301,7 +301,7 @@ $cleanFields = array(
 
   "machmellkliniklini" => $firstGenCleanFields,
 
-  "machmell" => $firstGenCleanFields,
+  // "machmell" => $firstGenCleanFields,
 
   "mountcayley" => array(
   'DateTime', 
