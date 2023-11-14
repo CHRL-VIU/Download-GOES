@@ -62,7 +62,6 @@ foreach ($nesids as $curStation => $nesid) {
       // adjust tipping bucket at Tet + snow depth
       if($curStation == "tetrahedron"){
         $filterArray['Rn_1'] = $filterArray['Rn_1'] * 2; // offset eyeballed by alex from raw data
-        $filterArray['SDepth'] = $filterArray['SDepth'] - 610.9; // offset from summer height from raw data (Julien)
       }
 
       // offset plummer snow depth + adj BP
