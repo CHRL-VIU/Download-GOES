@@ -69,6 +69,11 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['SDepth'] = $filterArray['SDepth'] + 630; // offset eyeballed by alex from raw data
       }
 
+      // offset lowercain SWE because current config of logger does not offset SWE (Julien from Bill)
+      if($curStation == "lowercain"){
+        $filterArray['SWE'] = $filterArray['SWE'] - 116; // in mm
+      }
+
       // convert air pressure but not at cain
       if(!in_array($curStation, $stnToKpa)){
         $filterArray['BP'] = $filterArray['BP'] / 10;   // convert BP from hpa to kpa 
