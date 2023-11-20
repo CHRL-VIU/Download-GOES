@@ -71,7 +71,7 @@ foreach ($nesids as $curStation => $nesid) {
 
       // offset lowercain SWE because current config of logger does not offset SWE (Julien from Bill)
       if($curStation == "lowercain"){
-        $filterArray['SWE'] = $filterArray['SWE'] - 116; // in mm
+        $filterArray['SW'] = $filterArray['SW'] - 116; // in mm
       }
 
       // convert air pressure but not at cain
