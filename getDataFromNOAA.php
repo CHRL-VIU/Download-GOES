@@ -56,6 +56,7 @@ foreach ($nesids as $curStation => $nesid) {
       if($curStation == "uppercruickshank"){
         // $filterArray['SDepth'] = $filterArray['SDepth'] + 572.1; // offset eyeballed by alex from raw data
         $filterArray['SDepth'] = $filterArray['SDepth'] - (609.7-572.1); // offset to counteract logger side attack 
+        $filterArray['SDepth'] = $filterArray['SDepth']*(sqrt(($filterArray['Temp'] + 273.15)/273.15)); // correct for temperature compensation in snow depth (added 11/28/2023 - Julien)
         $filterArray['PC'] = $filterArray['PC'] * 1000; // convert PT from m to mm
       }
       
