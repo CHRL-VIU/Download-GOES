@@ -50,8 +50,8 @@ $fields = array(
   "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB, SD2",
   "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB",
   "upperskeena" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD_raw, SW_ssg, PCm, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "mountmaya_fts" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, Rn_Total, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, PP_avg, TA, SD, VB, Ib, Vs, Is, YB",
-  "placeglacier" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD, VB, Ib, Vs, Is, YB"
+  "mountmaya_fts" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, Rn_Total, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, PP_avg, TA, SD, VB, Ib, Vs, I_S, YB",
+  "placeglacier" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD, VB, Ib, Vs, I_S, YB"
 );
 
 // this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables. We need this additional step bc the names of the raw tbls != the clean tabes probably a more elegant solution with a named array or something.. 
