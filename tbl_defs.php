@@ -238,12 +238,12 @@ $filterFields = array(
     'Rn_1', 
     'RnTotal', 
     'SDepth', 
-    'BP', 
+    'BP',
+    'Vtx', 
     'SWUavg15m', 
     'SWLavg15m', 
     'LWUavg15m', 
-    'LWLavg15m',  
-    'Vtx' 
+    'LWLavg15m'  
     ),
 
 );
@@ -442,11 +442,11 @@ $cleanFields = array(
     "PC_Tipper",
     "Snow_Depth",
     "BP",
+    "Batt",
     "SWU",
     "SWL",
     "LWU",
-    "LWL",
-    "Batt"
+    "LWL"
   ),
 
 );
