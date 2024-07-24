@@ -3,23 +3,23 @@
 
 // nesid list
 $nesids = array(
-    "upperskeena" => "49A02FBC",
-    "uppercruickshank" => "49008912",
-    "cainridgerun" => "49A0216E",
-    "apelake" => "BCF680B2",
-    "claytonfalls" => "BCF070F8",
-    "homathko" => "434BC438",
-    "klinaklini" => "4900B25A",
-    "lowercain" => "49004C0C",
-    // "machmell" => "BCF05614",
-    "machmellkliniklini" => "BCF05614",
-    "mountarrowsmith" => "490051A8",
-    "mountcayley" => "BCF00668",
-    "perseverance" => "49006AE0",
-    "tetrahedron" => "4900A12C",
-    "plummerhut" => "49007996",
+    // "upperskeena" => "49A02FBC",
+    // "uppercruickshank" => "49008912",
+    // "cainridgerun" => "49A0216E",
+    // "apelake" => "BCF680B2",
+    // "claytonfalls" => "BCF070F8",
+    // "homathko" => "434BC438",
+    // "klinaklini" => "4900B25A",
+    // "lowercain" => "49004C0C",
+    // // "machmell" => "BCF05614",
+    // "machmellkliniklini" => "BCF05614",
+    // "mountarrowsmith" => "490051A8",
+    // "mountcayley" => "BCF00668",
+    // "perseverance" => "49006AE0",
+    // "tetrahedron" => "4900A12C",
+    // "plummerhut" => "49007996",
     "mountmaya_fts" => "49a09c32",
-    "placeglacier" => "4344e446"
+    // "placeglacier" => "4344e446"
 );
 
 // these are the fields as they come in directly from noaa and will be uploaded to the raw_ tables
