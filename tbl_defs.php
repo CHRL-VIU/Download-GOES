@@ -229,7 +229,7 @@ $filterFields = array(
 
     "placeglacier" => array(
     'DateTime', 
-    'Rh', 
+    'RH', 
     'Temp', 
     'Mx_Spd', 
     'Mx_Dir', 
