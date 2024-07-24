@@ -18,7 +18,7 @@ $nesids = array(
     "perseverance" => "49006AE0",
     "tetrahedron" => "4900A12C",
     "plummerhut" => "49007996",
-    "mountmaya_fts" => "49a09c32",
+    "mountmaya" => "49a09c32",
     "placeglacier" => "4344e446"
 );
 
