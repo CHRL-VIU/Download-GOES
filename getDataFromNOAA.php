@@ -30,7 +30,7 @@ echo "Finished the raw table update... starting the clean tables now...\n";
 
 // Start Clean Table update
 
-$numRowsToClean = 1000;
+$numRowsToClean = 24;
 
 // stns to convert kpa 
 
