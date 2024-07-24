@@ -50,7 +50,7 @@ $fields = array(
   "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB, SD2",
   "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB",
   "upperskeena" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD_raw, SW_ssg, PCm, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "mountmaya_fts" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, TA, SD, VB, Ib, Vs, I_S, YB",
+  "mountmaya" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, TA, SD, VB, Ib, Vs, I_S, YB",
   "placeglacier" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD, VB, Ib, Vs, I_S, YB"
 );
 
@@ -210,7 +210,7 @@ $filterFields = array(
 
     'upperskeena' => $secGenFilterFields,
 
-    "mountmaya_fts" => array(
+    "mountmaya" => array(
     'DateTime', 
     'RH', 
     'Temp', 
@@ -411,7 +411,7 @@ $cleanFields = array(
 
   "upperskeena" => $secGenCleanFields,
 
-  "mountmaya_fts" => array(
+  "mountmaya" => array(
     "DateTime",
     "WatYr",
     "RH",
