@@ -28,7 +28,8 @@ function wtr_yr ($DATETIME, $START_MONTH=10) {
 
 function updateNesid ($SEARCHFILE_IN, $SEARCHFILE_OUT, $NESID) {
         $searchCritRaw = file_get_contents($SEARCHFILE_IN); // reads an array of lines
-        $searchCritNew = (substr_replace($searchCritRaw, $NESID, -10, 8));
+        // $searchCritNew = (substr_replace($searchCritRaw, $NESID, -10, 8));
+        $searchCritNew = (substr_replace($searchCritRaw, $NESID, 0));
         file_put_contents($SEARCHFILE_OUT, $searchCritNew);
     }
 
