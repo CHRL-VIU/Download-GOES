@@ -212,7 +212,7 @@ $filterFields = array(
 
     "mountmaya_fts" => array(
     'DateTime', 
-    'Rh', 
+    'RH', 
     'Temp', 
     'Mx_Spd', 
     'Mx_Dir', 
@@ -221,10 +221,10 @@ $filterFields = array(
     'Rn_1', 
     'RnTotal', 
     'SDepth', 
-    'BP', 
     'PYR', 
-    'Pcp1hr',
-    'Vtx' 
+    'BP', 
+    'Vtx',
+    'Pcp1hr' 
     ),
 
     "placeglacier" => array(
@@ -423,10 +423,11 @@ $cleanFields = array(
     "PP_Tipper",
     "PC_Tipper",
     "Snow_Depth",
-    "BP",
     "Solar_Rad",
-    "PP_Pipe",
+    "BP",
     "Batt"
+    "PP_Pipe",
+
   ),
 
   "placeglacier" => array(
