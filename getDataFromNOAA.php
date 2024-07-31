@@ -85,6 +85,11 @@ foreach ($nesids as $curStation => $nesid) {
         $filterArray['PC'] = ($filterArray['PC'] - 11.255) * 1000; // 
       }
 
+      // apply sea level correction to BP for mountmaya 
+      if($curStation == "mountmaya"){
+        $filterArray['BP'] = ($filterArray['BP'] + 18.63203478);        //  correction as per SB-100 sensor manual
+      }
+
       // offset place glacier snow depth
       if($curStation == "placeglacier"){
         $filterArray['SDepth'] = $filterArray['SDepth'] -122.3 ; // offset eyeballed by ben from raw data
