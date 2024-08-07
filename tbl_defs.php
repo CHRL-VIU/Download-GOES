@@ -426,7 +426,7 @@ $cleanFields = array(
     "Solar_Rad",
     "BP",
     "Batt",
-    "PP_Pipe"
+    "PC_Raw_Pipe"
   ),
 
   "placeglacier" => array(
