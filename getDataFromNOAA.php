@@ -88,7 +88,7 @@ foreach ($nesids as $curStation => $nesid) {
       // apply sea level correction to BP for mountmaya and convert m to mm for PC_Raw_Pipe
       if($curStation == "mountmaya"){
         $filterArray['BP'] = ($filterArray['BP'] + 18.63203478);        //  correction as per SB-100 sensor manual
-        $filterArray['PC_Raw_Pipe'] = $filterArray['PC_Raw_Pipe'] * 1000;        //  correction as per SB-100 sensor manual
+        $filterArray['Pcp1hr'] = $filterArray['Pcp1hr'] * 1000;        //  correction as per SB-100 sensor manual
 
       }
 
