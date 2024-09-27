@@ -356,8 +356,7 @@ $cleanFields = array(
   "mountarrowsmith" => array(    
     "DateTime",
     "WatYr",
-    "RH",
-    "Air_Temp",
+    "RH",  
     "Pk_Wind_Speed",
     "Pk_Wind_Dir",
     "Wind_Speed",
@@ -372,6 +371,7 @@ $cleanFields = array(
     "SWL",
     "LWU",
     "LWL",
+    "Air_Temp",
     "SWE",
     "PC_Raw_Pipe",
     "Batt"
