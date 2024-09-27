@@ -131,6 +131,7 @@ $filterFields = array(
     'VB' 
     ),
     
+
     // arrowsmith temporarily edited Sep-25-2024 to pull temp from TA2 (usually secGenFilterFields)
     "mountarrowsmith" => array(
       'DateTime', 
@@ -154,6 +155,7 @@ $filterFields = array(
       'PC', 
       'VB'
       ),
+
 
     "claytonfalls" => $firstGenFilterFields,
 
@@ -351,7 +353,8 @@ $cleanFields = array(
     "Batt"
   ),
 
-  "mountarrowsmith" => array("DateTime",
+  "mountarrowsmith" => array(    
+    "DateTime",
     "WatYr",
     "RH",
     "Pk_Wind_Speed",
