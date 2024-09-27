@@ -131,6 +131,8 @@ $filterFields = array(
     'VB' 
     ),
     
+
+    // arrowsmith temporarily edited Sep-25-2024 to pull temp from TA2 (usually secGenFilterFields)
     "mountarrowsmith" => array(
       'DateTime', 
       'RH', 
@@ -152,7 +154,8 @@ $filterFields = array(
       'SW', 
       'PC', 
       'VB'
-    ),
+      ),
+
 
     "claytonfalls" => $firstGenFilterFields,
 
@@ -372,7 +375,7 @@ $cleanFields = array(
     "SWE",
     "PC_Raw_Pipe",
     "Batt"
-  ),
+    ),
 
   "claytonfalls" => $firstGenCleanFields,
 
@@ -390,7 +393,7 @@ $cleanFields = array(
   'DateTime', 
   "WatYr",
   'RH', 
-  'Air_Temp', 
+  'Air_Temp',  
   "Pk_Wind_Speed",
   "Pk_Wind_Dir",
   "Wind_Speed",
@@ -398,7 +401,7 @@ $cleanFields = array(
   "PP_Tipper",
   "PC_Tipper",
   'Snow_Depth', 
-  'Solar_Rad', 
+  'Solar_Rad',
   'BP', 
   'Batt',
   "Soil_Moisture",
