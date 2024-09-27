@@ -375,7 +375,7 @@ $cleanFields = array(
     "SWE",
     "PC_Raw_Pipe",
     "Batt"
-    ),
+  ),
 
   "claytonfalls" => $firstGenCleanFields,
 
