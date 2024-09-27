@@ -131,7 +131,24 @@ $filterFields = array(
     'VB' 
     ),
     
-    "mountarrowsmith" => $secGenFilterFields,
+    "mountarrowsmith" => array(
+      'DateTime', 
+      'RH', 
+      'Temp', 
+      'Mx_Spd', 
+      'Mx_Dir', 
+      'Wspd', 
+      'Dir', 
+      'Rn_1', 
+      'RnTotal', 
+      'SDepth', 
+      'BP', 
+      'PYR', 
+      'SW_SSG', 
+      'Pcp1hr',
+      'Pcp_raw', 
+      'Vtx'
+    ),
 
     "claytonfalls" => $firstGenFilterFields,
 
@@ -329,7 +346,29 @@ $cleanFields = array(
     "Batt"
   ),
 
-  "mountarrowsmith" => $secGenCleanFields,
+  "mountarrowsmith" => array(    
+    "DateTime",
+    "WatYr",
+    "RH",
+    "Pk_Wind_Speed",
+    "Pk_Wind_Dir",
+    "Wind_Speed",
+    "Wind_Dir",
+    "PP_Tipper",
+    "PC_Tipper",
+    "Snow_Depth",
+    "BP",
+    "Soil_Moisture",
+    "Soil_Temperature",
+    "SWU",
+    "SWL",
+    "LWU",
+    "LWL",
+    "Air_Temp",
+    "SWE",
+    "PC_Raw_Pipe",
+    "Batt"
+  ),
 
   "claytonfalls" => $firstGenCleanFields,
 
