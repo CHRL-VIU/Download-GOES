@@ -134,7 +134,6 @@ $filterFields = array(
     "mountarrowsmith" => array(
       'DateTime', 
       'RH', 
-      'Temp', 
       'Mx_Spd', 
       'Mx_Dir', 
       'Wspd', 
@@ -143,11 +142,16 @@ $filterFields = array(
       'RnTotal', 
       'SDepth', 
       'BP', 
-      'PYR', 
-      'SW_SSG', 
-      'Pcp1hr',
-      'Pcp_raw', 
-      'Vtx'
+      'SM', 
+      'ST', 
+      'SWUavg15m', 
+      'SWLavg15m', 
+      'LWUavg15m', 
+      'LWLavg15m',
+      'TA2', 
+      'SW', 
+      'PC', 
+      'VB'
     ),
 
     "claytonfalls" => $firstGenFilterFields,
