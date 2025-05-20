@@ -30,7 +30,7 @@ echo "Finished the raw table update... starting the clean tables now...\n";
 
 // Start Clean Table update
 
-$numRowsToClean = 24;
+$numRowsToClean = 240;
 
 // stns to convert kpa 
 
@@ -95,6 +95,11 @@ foreach ($nesids as $curStation => $nesid) {
       // offset place glacier snow depth
       if($curStation == "placeglacier"){
         $filterArray['SDepth'] = $filterArray['SDepth'] -122.3 ; // offset eyeballed by ben from raw data
+      }
+
+      // Apply Arrowsmith SWE offset to correct zeroing beginning Jan 17, 2025
+      if($curStation == "mountarrowsmith"){
+        $filterArray['SWE'] = $filterArray['SWE'] + 488 ; // 
       }
 
       $curDateTime = $line["DateTime"];
