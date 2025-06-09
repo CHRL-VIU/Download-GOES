@@ -99,7 +99,7 @@ foreach ($nesids as $curStation => $nesid) {
 
       // Apply Arrowsmith SWE offset to correct zeroing beginning Jan 17, 2025
       if($curStation == "mountarrowsmith"){
-        $filterArray['SWE'] = $filterArray['SWE'] + 488 ; // 
+        $filterArray['SW'] = $filterArray['SW'] + 488 ; // 
       }
 
       $curDateTime = $line["DateTime"];
