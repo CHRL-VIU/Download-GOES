@@ -2,122 +2,127 @@
 // logging_functions.php
 
 /**
- * Log daily summary for a station.
- * Updates or creates a file per day and keeps one line per station.
- *
- * @param string $station Station name
- * @param array $skipped Array of skipped timestamps
- * @param array $failed Array of failed timestamps
+ * Path to logs folder (adjust if needed)
  */
-function logDailySummary($station, $skipped = [], $failed = []) {
-    $logDir = __DIR__ . "/logs/daily";
-    if (!file_exists($logDir)) mkdir($logDir, 0777, true);
+define('LOG_DIR', __DIR__ . '/logs');
+define('DAILY_TRACKING_DIR', LOG_DIR . '/daily_tracking');
+define('WEEKLY_TRACKING_DIR', LOG_DIR . '/weekly_tracking');
+define('DAILY_SUMMARY_DIR', LOG_DIR . '/daily');
+define('WEEKLY_SUMMARY_DIR', LOG_DIR . '/weekly');
 
-    $dateStr = date("Y-m-d"); // daily file
-    $logFile = "$logDir/summary_$dateStr.txt";
-
-    $summary = [];
-
-    // load existing summaries if file exists
-    if (file_exists($logFile)) {
-        $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            if (preg_match("/^\[([^\]]+)\]\s+(.*)$/", $line, $matches)) {
-                $summary[$matches[1]] = $matches[2];
-            }
-        }
+// Ensure directories exist
+foreach ([DAILY_TRACKING_DIR, WEEKLY_TRACKING_DIR, DAILY_SUMMARY_DIR, WEEKLY_SUMMARY_DIR] as $dir) {
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
     }
-
-    // get previous unique sets for station if they exist
-    $prevData = ["success" => [], "skipped" => [], "failed" => []];
-    if (isset($summary[$station])) {
-        if (preg_match_all("/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/", $summary[$station], $matches)) {
-            // assume timestamps were saved in previous line (optional)
-        }
-    }
-
-    // merge new skipped/failed
-    $failedUnique  = array_unique($failed);
-    $skippedUnique = array_unique($skipped);
-
-    // successes = attempted - skipped - failed
-    $allUnique = array_unique(array_merge($failedUnique, $skippedUnique));
-    $successCount = count($allUnique) ? count($allUnique) - count($failedUnique) - count($skippedUnique) : 0;
-
-    $line = sprintf(
-        "%d transmissions attempted: %d successful, %d skipped, %d failed",
-        count($allUnique),
-        $successCount,
-        count($skippedUnique),
-        count($failedUnique)
-    );
-
-    $summary[$station] = $line;
-
-    // write all lines back to file
-    $outputLines = [];
-    foreach ($summary as $stn => $txt) {
-        $outputLines[] = "[$stn] $txt";
-    }
-
-    file_put_contents($logFile, implode("\n", $outputLines) . "\n");
 }
 
 /**
- * Log weekly summary for a station.
- * Works like daily but accumulates over a week.
+ * Update the daily summary log for a station
  *
  * @param string $station Station name
- * @param array $skipped Array of skipped timestamps
- * @param array $failed Array of failed timestamps
+ * @param array $transmissions Array of ['timestamp' => status] for this run
  */
-function logWeeklySummary($station, $skipped = [], $failed = []) {
-    $logDir = __DIR__ . "/logs/weekly";
-    if (!file_exists($logDir)) mkdir($logDir, 0777, true);
+function update_daily_summary($station, $transmissions) {
+    $date = date("Y-m-d");
+    $trackingFile = DAILY_TRACKING_DIR . "/{$station}_{$date}.json";
+    $summaryFile  = DAILY_SUMMARY_DIR . "/summary_{$date}.txt";
 
-    // calculate ISO week
-    $weekStart = date("Y-m-d", strtotime("monday this week"));
-    $weekEnd   = date("Y-m-d", strtotime("sunday this week"));
-    $logFile   = "$logDir/summary_{$weekStart}_to_{$weekEnd}.txt";
+    // Load existing tracking info
+    $tracking = file_exists($trackingFile) ? json_decode(file_get_contents($trackingFile), true) : [];
 
-    $summary = [];
-
-    // load existing summaries if file exists
-    if (file_exists($logFile)) {
-        $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            if (preg_match("/^\[([^\]]+)\]\s+(.*)$/", $line, $matches)) {
-                $summary[$matches[1]] = $matches[2];
-            }
+    // Update tracking with new transmissions
+    foreach ($transmissions as $ts => $status) {
+        if (!isset($tracking[$ts]) || $tracking[$ts] !== $status) {
+            $tracking[$ts] = $status;
         }
     }
 
-    // merge new data with previous counts
-    $prevFailed  = $summary[$station]['failed'] ?? [];
-    $prevSkipped = $summary[$station]['skipped'] ?? [];
+    // Save tracking
+    file_put_contents($trackingFile, json_encode($tracking, JSON_PRETTY_PRINT));
 
-    $failedUnique  = array_unique(array_merge($prevFailed, $failed));
-    $skippedUnique = array_unique(array_merge($prevSkipped, $skipped));
-
-    $allUnique = array_unique(array_merge($failedUnique, $skippedUnique));
-    $successCount = count($allUnique) ? count($allUnique) - count($failedUnique) - count($skippedUnique) : 0;
-
-    $line = sprintf(
-        "%d transmissions attempted: %d successful, %d skipped, %d failed",
-        count($allUnique),
-        $successCount,
-        count($skippedUnique),
-        count($failedUnique)
-    );
-
-    $summary[$station] = $line;
-
-    // write all lines back to file
-    $outputLines = [];
-    foreach ($summary as $stn => $txt) {
-        $outputLines[] = "[$stn] $txt";
+    // Aggregate counts
+    $counts = ['success' => 0, 'skipped' => 0, 'failed' => 0];
+    foreach ($tracking as $s) {
+        if (isset($counts[$s])) $counts[$s]++;
     }
 
-    file_put_contents($logFile, implode("\n", $outputLines) . "\n");
+    // Write single-line summary
+    $line = sprintf("[%s] %d transmissions attempted: %d successful, %d skipped, %d failed\n",
+        $station,
+        array_sum($counts),
+        $counts['success'],
+        $counts['skipped'],
+        $counts['failed']
+    );
+
+    // Append/update daily summary file
+    $allLines = file_exists($summaryFile) ? file($summaryFile, FILE_IGNORE_NEW_LINES) : [];
+    $found = false;
+    foreach ($allLines as &$l) {
+        if (strpos($l, "[$station]") === 0) {
+            $l = rtrim($line);
+            $found = true;
+            break;
+        }
+    }
+    if (!$found) $allLines[] = rtrim($line);
+
+    file_put_contents($summaryFile, implode("\n", $allLines) . "\n");
+}
+
+/**
+ * Update the weekly summary log for a station
+ *
+ * @param string $station Station name
+ * @param array $transmissions Array of ['timestamp' => status] for this run
+ */
+function update_weekly_summary($station, $transmissions) {
+    // Determine ISO week and year
+    $weekNum = date("oW"); // e.g., 202538 = 2025, week 38
+    $trackingFile = WEEKLY_TRACKING_DIR . "/{$station}_week{$weekNum}.json";
+    $summaryFile  = WEEKLY_SUMMARY_DIR . "/summary_{$weekNum}.txt";
+
+    // Load existing tracking info
+    $tracking = file_exists($trackingFile) ? json_decode(file_get_contents($trackingFile), true) : [];
+
+    // Update tracking
+    foreach ($transmissions as $ts => $status) {
+        if (!isset($tracking[$ts]) || $tracking[$ts] !== $status) {
+            $tracking[$ts] = $status;
+        }
+    }
+
+    // Save tracking
+    file_put_contents($trackingFile, json_encode($tracking, JSON_PRETTY_PRINT));
+
+    // Aggregate counts
+    $counts = ['success' => 0, 'skipped' => 0, 'failed' => 0];
+    foreach ($tracking as $s) {
+        if (isset($counts[$s])) $counts[$s]++;
+    }
+
+    // Write single-line summary
+    $line = sprintf("[%s] %d transmissions attempted: %d successful, %d skipped, %d failed\n",
+        $station,
+        array_sum($counts),
+        $counts['success'],
+        $counts['skipped'],
+        $counts['failed']
+    );
+
+    // Append/update weekly summary file
+    $allLines = file_exists($summaryFile) ? file($summaryFile, FILE_IGNORE_NEW_LINES) : [];
+    $found = false;
+    foreach ($allLines as &$l) {
+        if (strpos($l, "[$station]") === 0) {
+            $l = rtrim($line);
+            $found = true;
+            break;
+        }
+    }
+    if (!$found) $allLines[] = rtrim($line);
+
+    file_put_contents($summaryFile, implode("\n", $allLines) . "\n");
 }
 ?>
