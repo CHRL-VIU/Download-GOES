@@ -23,31 +23,26 @@ foreach ([DAILY_TRACKING_DIR, WEEKLY_TRACKING_DIR, DAILY_SUMMARY_DIR, WEEKLY_SUM
  * @param string $station Station name
  * @param array $transmissions Array of ['timestamp' => status] for this run
  */
-function update_daily_summary($station, $transmissions) {
+function logDailySummary($station, $transmissions) {
     $date = date("Y-m-d");
     $trackingFile = DAILY_TRACKING_DIR . "/{$station}_{$date}.json";
     $summaryFile  = DAILY_SUMMARY_DIR . "/summary_{$date}.txt";
 
-    // Load existing tracking info
     $tracking = file_exists($trackingFile) ? json_decode(file_get_contents($trackingFile), true) : [];
 
-    // Update tracking with new transmissions
     foreach ($transmissions as $ts => $status) {
         if (!isset($tracking[$ts]) || $tracking[$ts] !== $status) {
             $tracking[$ts] = $status;
         }
     }
 
-    // Save tracking
     file_put_contents($trackingFile, json_encode($tracking, JSON_PRETTY_PRINT));
 
-    // Aggregate counts
     $counts = ['success' => 0, 'skipped' => 0, 'failed' => 0];
     foreach ($tracking as $s) {
         if (isset($counts[$s])) $counts[$s]++;
     }
 
-    // Write single-line summary
     $line = sprintf("[%s] %d transmissions attempted: %d successful, %d skipped, %d failed\n",
         $station,
         array_sum($counts),
@@ -56,7 +51,6 @@ function update_daily_summary($station, $transmissions) {
         $counts['failed']
     );
 
-    // Append/update daily summary file
     $allLines = file_exists($summaryFile) ? file($summaryFile, FILE_IGNORE_NEW_LINES) : [];
     $found = false;
     foreach ($allLines as &$l) {
@@ -77,32 +71,26 @@ function update_daily_summary($station, $transmissions) {
  * @param string $station Station name
  * @param array $transmissions Array of ['timestamp' => status] for this run
  */
-function update_weekly_summary($station, $transmissions) {
-    // Determine ISO week and year
-    $weekNum = date("oW"); // e.g., 202538 = 2025, week 38
+function logWeeklySummary($station, $transmissions) {
+    $weekNum = date("oW"); 
     $trackingFile = WEEKLY_TRACKING_DIR . "/{$station}_week{$weekNum}.json";
     $summaryFile  = WEEKLY_SUMMARY_DIR . "/summary_{$weekNum}.txt";
 
-    // Load existing tracking info
     $tracking = file_exists($trackingFile) ? json_decode(file_get_contents($trackingFile), true) : [];
 
-    // Update tracking
     foreach ($transmissions as $ts => $status) {
         if (!isset($tracking[$ts]) || $tracking[$ts] !== $status) {
             $tracking[$ts] = $status;
         }
     }
 
-    // Save tracking
     file_put_contents($trackingFile, json_encode($tracking, JSON_PRETTY_PRINT));
 
-    // Aggregate counts
     $counts = ['success' => 0, 'skipped' => 0, 'failed' => 0];
     foreach ($tracking as $s) {
         if (isset($counts[$s])) $counts[$s]++;
     }
 
-    // Write single-line summary
     $line = sprintf("[%s] %d transmissions attempted: %d successful, %d skipped, %d failed\n",
         $station,
         array_sum($counts),
@@ -111,7 +99,6 @@ function update_weekly_summary($station, $transmissions) {
         $counts['failed']
     );
 
-    // Append/update weekly summary file
     $allLines = file_exists($summaryFile) ? file($summaryFile, FILE_IGNORE_NEW_LINES) : [];
     $found = false;
     foreach ($allLines as &$l) {
