@@ -10,6 +10,9 @@ require 'tbl_defs.php';
 // get the functions
 require 'noaa_functions.php';
 
+// get logging functions
+require 'logging_functions.php';
+
 // update search criteria file based on provided NESID 
 // file format is: 
 // DRS_SINCE: now - 180 minutes
@@ -20,11 +23,55 @@ require 'noaa_functions.php';
 // start raw tbl update
 //loop through NESIDs to query
 foreach ($nesids as $name => $id){
-        updateNesid(LRGS_QUERY_IN, LRGS_QUERY_OUT, $id); // update search crit file to query current file
-        echo "Starting the LRGS data request for station: " . $id. "\n";
-        $output = shell_exec(CMD); // CMD is defined in the config and runs this line "C:/LRGSClient/bin/getDcpMessages -h \"cdadata.wcda.noaa.gov\" -u \"".NOAAUSER."\" -P \"".NOAAPASS."\" -f \"C:/LRGSClient/MessageBrowser.sc\" -b \"@\""
-        parseDataFromNOAA($output, $name, $fields);
+      try {
+            updateNesid(LRGS_QUERY_IN, LRGS_QUERY_OUT, $id);
+            echo "Starting the LRGS data request for station: $id\n";
+
+            $output = shell_exec(CMD);
+
+            // parseDataFromNOAA now returns an array of skipped timestamps and errors
+            $stationSummary = parseDataFromNOAA($output, $name, $fields);
+
+            $summary[$name]['status'] = "Success";
+            $summary[$name]['skipped'] = $stationSummary['skipped'] ?? [];
+            $summary[$name]['errors']  = $stationSummary['errors'] ?? [];
+
+            // -------------------------------
+            // Call logging functions here
+            // -------------------------------
+            $skipped = $stationSummary['skipped'] ?? [];
+            $failed  = $stationSummary['errors'] ?? []; // could be timestamps or just messages
+
+            logDailySummary($name, $skipped, $failed);
+            logWeeklySummary($name, $skipped, $failed);
+
+      } catch (Exception $e) {
+            $summary[$name]['status'] = "Failed";
+            $summary[$name]['errors'][] = $e->getMessage();
+
+            // log failures too
+            logDailySummary($name, [], [$e->getMessage()]);
+            logWeeklySummary($name, [], [$e->getMessage()]);
+
+            continue;
+      }
 }
+
+$logFile = __DIR__ . "/noaa_processing_summary_" . date("Ymd_His") . ".txt";
+file_put_contents($logFile, "NOAA Processing Summary\n====================\n");
+
+foreach ($summary as $stn => $info) {
+      file_put_contents($logFile, "Station: $stn\nStatus: ".$info['status']."\n", FILE_APPEND);
+      if(!empty($info['skipped'])) {
+            file_put_contents($logFile, "Skipped transmissions: ".implode(", ", $info['skipped'])."\n", FILE_APPEND);
+      }
+      if(!empty($info['errors'])) {
+            file_put_contents($logFile, "Errors: ".implode("\n", $info['errors'])."\n", FILE_APPEND);
+      }
+      file_put_contents($logFile, "--------------------\n", FILE_APPEND);
+}
+
+echo "Finished NOAA retrieval. Summary written to $logFile\n";
 
 echo "Finished the raw table update... starting the clean tables now...\n";
 

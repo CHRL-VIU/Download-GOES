@@ -34,56 +34,61 @@ function updateNesid ($SEARCHFILE_IN, $SEARCHFILE_OUT, $NESID) {
 
 // function to parse raw NOAA output and insert a tx into our db
 function parseDataFromNOAA ($rawOutput, $stnname, $fieldsArray){
-  $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
+      $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
 
-  if (mysqli_connect_errno()) {
-    echo "Failed to connect to MySQL: " . mysqli_connect_error();
-    exit;
-  }
-  
-  $fields = $fieldsArray[$stnname];
-
-  $field_length = count(explode(", ", $fields));
-
-  $array = explode("@", $rawOutput); // turn raw string into array for each timestamped transmission which are separated by "@" defined in the config. 
-
-  // loop through each tx and return a line of data compatible with our db 
-  foreach ($array as $line) {
-      if($line == ""){
-          continue; // skip empty tranmissions
+      if (mysqli_connect_errno()) {
+            echo "Failed to connect to MySQL: " . mysqli_connect_error();
+            return ['skipped'=>[], 'errors'=>["DB connection failed"]];
       }
 
-      $lineArray = preg_split('/[\s]+/', $line); // split up the string by line breaks and creates an array with each tx variable in each array element
+      $fields = $fieldsArray[$stnname];
+      $field_length = count(explode(", ", $fields));
+      $array = explode("@", $rawOutput); // split raw string into transmissions
 
-      // grab elements needed for date
-      $hr = substr($lineArray[0], 13, 2);
-      $yr = "20" . substr($lineArray[0], 8, 2);
-      $jday = substr($lineArray[0], 10, 3);
+      $skipped = [];
+      $errors = [];
 
-      $datetime = date("Y-m-d H:00:00", strtotime('+'.$jday.' days', mktime($hr, 0, 0, 1, 0, $yr)) - (8*60*60));  // LHS is jdays to add to reference time, RHS is reference time to add jdays to. And need to subtract 8 hours to get to PST to match viu DB
+      foreach ($array as $line) {
+            if(trim($line) == ""){
+                  continue; // skip empty transmissions
+            }
 
-      // remove raw NOAA timestamp / nesid string ofromf array
-      $removedItem = array_shift($lineArray);
-      // add datetime to start of array
-      array_unshift($lineArray, $datetime);
-      // remove empty line at end of array 
-      array_pop($lineArray);
+            $lineArray = preg_split('/[\s]+/', $line);
 
-      if(!count($lineArray) == $field_length){
-          continue; // skip incomplete transmissions
+            // grab elements for datetime
+            $hr = substr($lineArray[0], 13, 2);
+            $yr = "20" . substr($lineArray[0], 8, 2);
+            $jday = substr($lineArray[0], 10, 3);
+
+            $datetime = date("Y-m-d H:00:00", strtotime('+'.$jday.' days', mktime($hr, 0, 0, 1, 0, $yr)) - (8*60*60));
+
+            // remove raw NOAA timestamp / nesid string
+            $removedItem = array_shift($lineArray);
+            array_unshift($lineArray, $datetime);
+            array_pop($lineArray); // remove empty last element
+
+            // skip transmission if number of fields mismatch
+            if(count($lineArray) != $field_length){
+                  $skipped[] = $datetime;
+                  continue;
+            }
+
+            // escape single quotes in data
+            $lineArray = array_map(function($v){ return str_replace("'", "\\'", $v); }, $lineArray);
+
+            $datString = implode("','", $lineArray);
+            $query = "INSERT IGNORE INTO `raw_$stnname` ($fields) VALUES('$datString')";
+
+            if (!mysqli_query($conn, $query)) {
+                  $errors[] = "Failed insert at $datetime: ".mysqli_error($conn);
+                  $skipped[] = $datetime;
+                  continue;
+            }
       }
 
-      // create string from array elements in current line
-      $datString = implode("','", $lineArray);
+      mysqli_close($conn);
 
-      $query = "insert ignore into `raw_$stnname` ($fields) values('$datString')";
-
-      if (!mysqli_query($conn, $query)) {
-      echo "Update ".$stnname." Raw Tbl Error description: " . mysqli_error($conn);
-      continue;
-      }
-  }
-
+      return ['skipped'=>$skipped, 'errors'=>$errors];
 }
 function getMySQLRows($stationName, $numRows) {
     $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
