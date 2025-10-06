@@ -52,6 +52,8 @@ foreach ($nesids as $name => $id){
     }
 }
 
+
+echo "Finished the raw table update... starting the clean tables now...\n";
 // -------------------------------
 // Start Clean Table update
 // -------------------------------
