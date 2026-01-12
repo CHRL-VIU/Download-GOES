@@ -38,8 +38,9 @@ foreach ($nesids as $name => $id){
         $failed        = $stationSummary['errors'] ?? [];
 
         // calculate successes
-        $successes = array_diff($allTimestamps, array_merge($skipped, $failed));
-
+        $skippedTimes = array_column($skipped, 'datetime');
+        $successes = array_diff($allTimestamps, $skippedTimes, $failed);
+        
         // update auxiliary daily/weekly logs
         logDailySummary($name, $successes, $skipped, $failed);
         logWeeklySummary($name, $successes, $skipped, $failed);
