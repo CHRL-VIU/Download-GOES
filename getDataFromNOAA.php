@@ -24,6 +24,14 @@ require 'logging_functions.php';
 // ------------------------------------------------------------
 foreach ($nesids as $stnName => $nesid) {
 
+    // update search criteria file based on provided NESID 
+    // file format is: 
+    // DRS_SINCE: now - 180 minutes 
+    // DRS_UNTIL: now 
+    // DCP_ADDRESS: 49A0216E 
+    // located at /LRGS/MessageBrowser.sc
+    // IMPORTANT: Retrieval timeframe is controlled by user setting DRS_SINCE in /LRGS/MessageBrowser_steady.sc
+
     updateNesid(LRGS_QUERY_IN, LRGS_QUERY_OUT, $nesid);
     echo "Starting LRGS data request for station: $stnName ($nesid)\n";
 

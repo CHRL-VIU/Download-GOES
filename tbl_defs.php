@@ -17,491 +17,173 @@ $nesids = array(
     "mountcayley" => "BCF00668",
     "perseverance" => "49006AE0",
     "tetrahedron" => "4900A12C",
+
     "plummerhut" => "49007996",
     "mountmaya" => "49a09c32",
     "placeglacier" => "4344e446"
 );
 
-// these are the fields as they come in directly from noaa and will be uploaded to the raw_ tables
+// Common 1st/2nd Gen Fields for FTS msg/process/clean tables used to auto-populate some stations below
+$firstGenFtsMsgFields  = ['DateTime', 'RH', 'Temp', 'Mx_Spd', 'Mx_Dir', 'WSK10mMax', 'WDD10mMax', 'Wspd', 'Dir', 'Rn_1', 'RnTotal', 'SDepth', 'SDcomp', 'SDist_Q', 'PYR', 'PYRSR', 'BP', 'Telem', 'Vtx', 'TCase', 'Pcp1hr', 'Pcp_raw', 'Pcp_temp', 'SW_SSG'];
+$firstGenProcessFields = ['DateTime', 'WatYr', 'RH', 'Temp', 'Mx_Spd', 'Mx_Dir', 'Wspd', 'Dir', 'Rn_1', 'RnTotal', 'SDepth', 'BP', 'PYR', 'Pcp1hr', 'Pcp_raw', 'SW_SSG', 'Vtx'];
+$firstGenCleanFields   = ['DateTime', 'WatYr', 'RH', 'Air_Temp', 'Pk_Wind_Speed', 'Pk_Wind_Dir', 'Wind_Speed', 'Wind_Dir', 'PP_Tipper', 'PC_Tipper', 'Snow_Depth', 'BP', 'Solar_Rad', 'PP_Pipe', 'PC_Raw_Pipe', 'SWE', 'Batt'];
 
-// common fields for older wx stns (i.e. clayton falls, ape lake, machmell klini) 
-$firstGenFtsRawFeilds = "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG";
+$secGenFtsMsgFields    = ['DateTime', 'RH', 'Temp', 'Mx_Spd', 'Mx_Dir', 'WSK10mMax', 'WDD10mMax', 'Wspd', 'Dir', 'Rn_1', 'RnTotal', 'SDepth', 'SDcomp', 'SDist_Q', 'BP', 'Telem', 'Vtx', 'TCase', 'SM', 'ST', 'SWUavg15m', 'SWLavg15m', 'LWUavg15m', 'LWLavg15m', 'ALBavg15m', 'TA', 'SW', 'SD', 'PC', 'VB', 'Ib', 'Vs', 'I_S', 'YB'];
+$secGenProcessFields   = ['DateTime', 'WatYr', 'RH', 'Temp', 'Mx_Spd', 'Mx_Dir', 'Wspd', 'Dir', 'Rn_1', 'RnTotal', 'SDepth', 'BP', 'SM', 'ST', 'SWUavg15m', 'SWLavg15m', 'LWUavg15m', 'LWLavg15m', 'SW', 'PC', 'VB'];
+$secGenCleanFields     = ['DateTime', 'WatYr', 'RH', 'Air_Temp', 'Pk_Wind_Speed', 'Pk_Wind_Dir', 'Wind_Speed', 'Wind_Dir', 'PP_Tipper', 'PC_Tipper', 'Snow_Depth', 'BP', 'Soil_Moisture', 'Soil_Temperature', 'SWU', 'SWL', 'LWU', 'LWL', 'SWE', 'PC_Raw_Pipe', 'Batt'];
 
-// common fields for newer wx stations (i.e. arrowsmith, cruickshank, klini, homathko)
-$secGenFtsRawFeilds = "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB";
+// ------------------------------------------------------------
+// Station table definitions
+// ------------------------------------------------------------
+// $stations defines how GOES messages are parsed and mapped
+// into raw and clean database tables for each station.
+//
+// Required keys per station:
+//
+//   msg_fields
+//     - Ordered list of all fields in the incoming GOES message used to parse raw transmissions
+//     - MUST exactly match the GOES message field order and length
+//     - Fields MUST correspond to the field names in the raw_<station> SQL table (for those in raw_fields, anyhow)
+//
+//   raw_fields
+//     - Subset of msg_fields to be written to the raw_<station> table
+//     - Fields MUST exist in msg_fields
+//     - Fields names MUST correspond to the field names in the raw_<station> SQL table
+//
+//   process_fields
+//     - Ordered list of fields to be pulled from raw table and inserted into clean table
+//     - May also include computed fields not present in the raw table (e.g. WatYr)
+//     - Fields names MUST correspond to the field names in raw_fields and the raw_<station> table
+//     - MUST be positionally aligned with clean_fields
+//
+//   clean_fields
+//     - Ordered list of fields used to map and insert fields into the clean_<station> SQL table
+//     - Fields names MUST correspond to the field names in the clean_<station> SQL table
+//     - MUST be positionally aligned with process_fields
+//
+// IMPORTANT:
+//   - process_fields and clean_fields must be the same length and positionally aligned
+//   - Any computed field (e.g. WatYr) must appear in process_fields
+//     and is handled explicitly in the processing script
 
-// put all raw stn fields together into array
-$fields = array(
-  "claytonfalls" => $firstGenFtsRawFeilds,
-  "apelake" => $firstGenFtsRawFeilds,
-  "machmellkliniklini" => $firstGenFtsRawFeilds,
-  // "machmell" => $firstGenFtsRawFeilds,
-  
-  "cainridgerun" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, TA, SD, VB, Ib, Vs, I_S, YB, Ttherm, Rt",
-  "lowercain" => "DateTime, RH, Temp, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, Telem, Vtx, TCase, Pcp1hr, Pcp_raw, Pcp_temp, SW_SSG, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB, Ttherm, Rt",
-  
-  "mountarrowsmith" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, TA2, SW, SD, PC, VB, Ib, Vs, I_S, YB, PCTW, SWTW",
-  "homathko" => $secGenFtsRawFeilds,
-  "klinaklini" => $secGenFtsRawFeilds,
-  "uppercruickshank" => $secGenFtsRawFeilds,
+$stations = [
+    "claytonfalls" => [
+        "msg_fields"     => $firstGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $firstGenProcessFields,
+        "clean_fields"   => $firstGenCleanFields
+    ],
 
-  "mountcayley" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SM, ST, Pcp1hr, Pcp_raw",
-  "perseverance" => $secGenFtsRawFeilds,
-  "tetrahedron" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, SDepth2, SDcomp2, SDist_Q2, SW, SM, ST, TA, SD, PC, VB, Ib, Vs, I_S, YB, SD2, PCTW, SWTW",
-  "plummerhut" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, TA, SD, VB, Ib, Vs, I_S, YB, SR_temp_lo, SDepth_lo, SDcomp_lo, SD_raw_lo, SDist_Q_lo",
-  "upperskeena" => "DateTime, RH, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SM, ST, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD_raw, SW_ssg, PCm, TA, SW, SD, PC, VB, Ib, Vs, I_S, YB",
-  "mountmaya" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, PYR, PYRSR, BP, Telem, Vtx, TCase, Pcp1hr, TA, SD, VB, Ib, Vs, I_S, YB",
-  "placeglacier" => "DateTime, Rh, Temp, Mx_Spd, Mx_Dir, WSK10mMax, WDD10mMax, Wspd, Dir, Rn_1, RnTotal, SDepth, SDcomp, SDist_Q, BP, Telem, Vtx, TCase, SWUavg15m, SWLavg15m, LWUavg15m, LWLavg15m, ALBavg15m, SD, VB, Ib, Vs, I_S, YB, SR_temp_lo, SDepth_lo, SDcomp_lo, SD_raw_lo, SDist_Q_lo"
-);
+    "apelake" => [
+        "msg_fields"     => $firstGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $firstGenProcessFields,
+        "clean_fields"   => $firstGenCleanFields
+    ],
 
-// this is the list of raw_ fields that we care about and will publish to the clean tables note that the names here do not match the clean_ tables. We need this additional step bc the names of the raw tbls != the clean tabes probably a more elegant solution with a named array or something.. 
-// for common older station defs
-$firstGenFilterFields = array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'PYR', 
-    'SW_SSG', 
-    'Pcp1hr',
-    'Pcp_raw', 
-    'Vtx' 
-);
+    "machmellkliniklini" => [
+        "msg_fields"     => $firstGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $firstGenProcessFields,
+        "clean_fields"   => $firstGenCleanFields
+    ],
 
-// for repeating newer station definitions
-$secGenFilterFields = array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'SM', 
-    'ST', 
-    'SWUavg15m', 
-    'SWLavg15m', 
-    'LWUavg15m', 
-    'LWLavg15m', 
-    'SW', 
-    'PC', 
-    'VB'
-  );
+    "cainridgerun" => [
+        "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','Telem','Vtx','TCase','TA','SD','VB','Ib','Vs','I_S','YB','Ttherm','Rt'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','PYR','VB'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','Batt']
+    ],
 
-    // put together
-$filterFields = array(
-    "uppercruickshank" => $secGenFilterFields,
+    "lowercain" => [
+        "msg_fields"     => ['DateTime','RH','Temp','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','Telem','Vtx','TCase','Pcp1hr','Pcp_raw','Pcp_temp','SW_SSG','TA','SW','SD','PC','VB','Ib','Vs','I_S','YB','Ttherm','Rt'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Rn_1','RnTotal','SDepth','PYR','SW','PC','VB'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','SWE','PC_Raw_Pipe','Batt']
+    ],
 
-    "cainridgerun" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'PYR', 
-    'VB'
-    ),
+    "mountarrowsmith" => [
+        "msg_fields"     => ['DateTime','Rh','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','BP','Telem','Vtx','TCase','SDepth2','SDcomp2','SDist_Q2','SW','SM','ST','TA','TA2','SD','PC','VB','Ib','Vs','I_S','YB','PCTW','SWTW'],
+        "raw_fields"     => ['DateTime','Rh','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','BP','Telem','Vtx','TCase','SW','SM','ST','TA','TA2','SD','PC','VB','Ib','Vs','I_S','YB'],
+        "process_fields" => ['DateTime','WatYr','RH','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','SM','ST','TA2','SW','PC','VB'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','BP','Soil_Moisture','Soil_Temperature','Air_Temp','SWE','PC_Raw_Pipe','Batt']
+    ],
 
-    "lowercain" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'PYR', 
-    'SW', 
-    'PC', 
-    'VB' 
-    ),
-    
+    "homathko" => [
+        "msg_fields"     => $secGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $secGenProcessFields,
+        "clean_fields"   => $secGenCleanFields
+    ],
 
-    // arrowsmith temporarily edited Sep-25-2024 to pull temp from TA2 (usually secGenFilterFields)
-    "mountarrowsmith" => array(
-      'DateTime', 
-      'RH', 
-      'Mx_Spd', 
-      'Mx_Dir', 
-      'Wspd', 
-      'Dir', 
-      'Rn_1', 
-      'RnTotal', 
-      'SDepth', 
-      'BP', 
-      'SM', 
-      'ST', 
-      'SWUavg15m', 
-      'SWLavg15m', 
-      'LWUavg15m', 
-      'LWLavg15m',
-      'TA2', 
-      'SW', 
-      'PC', 
-      'VB'
-      ),
+    "klinaklini" => [
+        "msg_fields"     => $secGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $secGenProcessFields,
+        "clean_fields"   => $secGenCleanFields
+    ],
 
+    "uppercruickshank" => [
+        "msg_fields"     => $secGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $secGenProcessFields,
+        "clean_fields"   => $secGenCleanFields
+    ],
 
-    "claytonfalls" => $firstGenFilterFields,
+    "mountcayley" => [
+        "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','BP','Telem','Vtx','TCase','SM','ST','Pcp1hr','Pcp_raw'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','PYR','SM','ST','Pcp1hr','Pcp_raw','Vtx'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','BP','Batt','Soil_Moisture','Soil_Temperature','PP_Pipe','PC_Raw_Pipe']
+    ],
 
-    "machmellkliniklini" => $firstGenFilterFields,
+    "perseverance" => [
+        "msg_fields"     => $secGenFtsMsgFields,
+        "raw_fields"     => [],
+        "process_fields" => $secGenProcessFields,
+        "clean_fields"   => $secGenCleanFields
+    ],
 
-    // "machmell" => $firstGenFilterFields,
+    "tetrahedron" => [
+        "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','BP','Telem','Vtx','TCase','SDepth2','SDcomp2','SDist_Q2','SW','SM','ST','TA','SD','PC','VB','Ib','Vs','I_S','YB','SD2','PCTW','SWTW'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','PYR','SM','ST','SW','PC','Vtx'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','BP','Batt','SWE','Soil_Moisture','Soil_Temperature','PC_Raw_Pipe']
+    ],
 
-    "apelake" => $firstGenFilterFields,   
+    "plummerhut" => [
+        "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','BP','Telem','Vtx','TCase','SM','ST','SWUavg15m','SWLavg15m','LWUavg15m','LWLavg15m','ALBavg15m','TA','SD','VB','Ib','Vs','I_S','YB','SR_temp_lo','SDepth_lo','SDcomp_lo','SD_raw_lo','SDist_Q_lo'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','SM','ST','SWUavg15m','SWLavg15m','LWUavg15m','LWLavg15m','VB','SR_temp_lo','SDepth_lo'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','BP','Soil_Moisture','Soil_Temperature','SWU','SWL','LWU','LWL','Batt','Air_Temp_2','Snow_Depth_2']
+    ],
 
-    "homathko" => $secGenFilterFields,
+    "upperskeena" => [
+        "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','BP','Telem','Vtx','TCase','SM','ST','SWUavg15m','SWLavg15m','LWUavg15m','LWLavg15m','ALBavg15m','SD_raw','SW_ssg','PCm','TA','SW','SD','PC','VB','Ib','Vs','I_S','YB'],
+        "raw_fields"     => [],
+        "process_fields" => $secGenProcessFields,
+        "clean_fields"   => $secGenCleanFields
+    ],
 
-    "klinaklini" => $secGenFilterFields,
+    "mountmaya" => [
+        "msg_fields"     => ['DateTime','Rh','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','BP','Telem','Vtx','TCase','Pcp1hr','TA','SD','VB','Ib','Vs','I_S','YB'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','PYR','BP','Vtx','Pcp1hr'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','BP','Batt','PC_Raw_Pipe']
+    ],
 
-    "mountcayley" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'PYR', 
-    'SM', 
-    'ST', 
-    'Pcp1hr',
-    'Pcp_raw', 
-    'Vtx' 
-    ),
+    "placeglacier" => [
+        "msg_fields"     => ['DateTime','Rh','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','BP','Telem','Vtx','TCase','SWUavg15m','SWLavg15m','LWUavg15m','LWLavg15m','ALBavg15m','SD','VB','Ib','Vs','I_S','YB','SR_temp_lo','SDepth_lo','SDcomp_lo','SD_raw_lo','SDist_Q_lo'],
+        "raw_fields"     => [],
+        "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','Vtx','SWUavg15m','SWLavg15m','LWUavg15m','LWLavg15m','SR_temp_lo','SDepth_lo'],
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','BP','Batt','SWU','SWL','LWU','LWL','Air_Temp_2','Snow_Depth_2']
+    ]
+];
 
-    "perseverance" => $secGenFilterFields,
-
-    "tetrahedron" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'PYR', 
-    'SM', 
-    'ST', 
-    'SW', 
-    'PC', 
-    'Vtx' 
-    ),
-
-    "plummerhut" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP', 
-    'SM', 
-    'ST', 
-    'SWUavg15m', 
-    'SWLavg15m', 
-    'LWUavg15m', 
-    'LWLavg15m', 
-    'VB',
-    'SR_temp_lo',
-    'SDepth_lo'
-    ),
-
-    'upperskeena' => $secGenFilterFields,
-
-    "mountmaya" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'PYR', 
-    'BP', 
-    'Vtx',
-    'Pcp1hr' 
-    ),
-
-    "placeglacier" => array(
-    'DateTime', 
-    'RH', 
-    'Temp', 
-    'Mx_Spd', 
-    'Mx_Dir', 
-    'Wspd', 
-    'Dir', 
-    'Rn_1', 
-    'RnTotal', 
-    'SDepth', 
-    'BP',
-    'Vtx', 
-    'SWUavg15m', 
-    'SWLavg15m', 
-    'LWUavg15m', 
-    'LWLavg15m',
-    'SR_temp_lo',
-    'SDepth_lo'  
-    ),
-
-);
-
-// list of fields that match the clean_ tables need to match ordering of raw_tbls
-
-// common clean table defs for older wx stns
-$firstGenCleanFields = array(
-  'DateTime', 
-  "WatYr",
-  'RH', 
-  'Air_Temp', 
-  "Pk_Wind_Speed",
-  "Pk_Wind_Dir",
-  "Wind_Speed",
-  "Wind_Dir",
-  "PP_Tipper",
-  "PC_Tipper",
-  'Snow_Depth', 
-  'Solar_Rad', 
-  'BP', 
-  'Batt',
-  'PP_Pipe',
-  'PC_Raw_Pipe', 
-  'SWE'
-);
-
-// common clean table defs for newer wx stns
-$secGenCleanFields = array(    
-    "DateTime",
-    "WatYr",
-    "RH",
-    "Air_Temp",
-    "Pk_Wind_Speed",
-    "Pk_Wind_Dir",
-    "Wind_Speed",
-    "Wind_Dir",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "BP",
-    "Soil_Moisture",
-    "Soil_Temperature",
-    "SWU",
-    "SWL",
-    "LWU",
-    "LWL",
-    "SWE",
-    "PC_Raw_Pipe",
-    "Batt"
-  );
-
-// we need this third step because not all stations transmit data for each of our clean table fields we could fill these in as NaNs on the data retrival script but this was just as easy
-$cleanFields = array(
-  "uppercruickshank" => $secGenCleanFields,
-
-  "cainridgerun" => array(
-    "DateTime",
-    "WatYr",
-    "RH",
-    "Air_Temp",
-    "Pk_Wind_Speed",
-    "Pk_Wind_Dir",
-    "Wind_Speed",
-    "Wind_Dir",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "Solar_Rad",
-    "Batt"
-  ),
-  "lowercain" => array(
-    "DateTime",
-    "WatYr",
-    "RH",
-    "Air_Temp",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "Solar_Rad",
-    "SWE",
-    "PC_Raw_Pipe",
-    "Batt"
-  ),
-
-  "mountarrowsmith" => array(    
-    "DateTime",
-    "WatYr",
-    "RH",  
-    "Pk_Wind_Speed",
-    "Pk_Wind_Dir",
-    "Wind_Speed",
-    "Wind_Dir",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "BP",
-    "Soil_Moisture",
-    "Soil_Temperature",
-    "SWU",
-    "SWL",
-    "LWU",
-    "LWL",
-    "Air_Temp",
-    "SWE",
-    "PC_Raw_Pipe",
-    "Batt"
-  ),
-
-  "claytonfalls" => $firstGenCleanFields,
-
-  "apelake" => $firstGenCleanFields,
-
-  "homathko" => $secGenCleanFields,
-
-  "klinaklini" => $secGenCleanFields,
-
-  "machmellkliniklini" => $firstGenCleanFields,
-
-  // "machmell" => $firstGenCleanFields,
-
-  "mountcayley" => array(
-  'DateTime', 
-  "WatYr",
-  'RH', 
-  'Air_Temp',  
-  "Pk_Wind_Speed",
-  "Pk_Wind_Dir",
-  "Wind_Speed",
-  "Wind_Dir",
-  "PP_Tipper",
-  "PC_Tipper",
-  'Snow_Depth', 
-  'Solar_Rad',
-  'BP', 
-  'Batt',
-  "Soil_Moisture",
-  "Soil_Temperature",
-  'PP_Pipe',
-  'PC_Raw_Pipe'
-  ),
-
-  "perseverance" => $secGenCleanFields,
-
-  "tetrahedron" => array(
-  'DateTime', 
-  "WatYr",
-  'RH', 
-  'Air_Temp', 
-  "Pk_Wind_Speed",
-  "Pk_Wind_Dir",
-  "Wind_Speed",
-  "Wind_Dir",
-  "PP_Tipper",
-  "PC_Tipper",
-  'Snow_Depth', 
-  'Solar_Rad', 
-  'BP',
-  'Batt',
-  'SWE',  
-  "Soil_Moisture",
-  "Soil_Temperature",
-  'PC_Raw_Pipe'
-  ),
-
-  "plummerhut" => array(
-    "DateTime",
-    "WatYr",
-    "RH",
-    "Air_Temp",
-    "Pk_Wind_Speed",
-    "Pk_Wind_Dir",
-    "Wind_Speed",
-    "Wind_Dir",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "BP",
-    "Soil_Moisture",
-    "Soil_Temperature",
-    "SWU",
-    "SWL",
-    "LWU",
-    "LWL",
-    "Batt",
-    "Air_Temp_2",
-    "Snow_Depth_2"
-  ),
-
-  "upperskeena" => $secGenCleanFields,
-
-  "mountmaya" => array(
-    "DateTime",
-    "WatYr",
-    "RH",
-    "Air_Temp",
-    "Pk_Wind_Speed",
-    "Pk_Wind_Dir",
-    "Wind_Speed",
-    "Wind_Dir",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "Solar_Rad",
-    "BP",
-    "Batt",
-    "PC_Raw_Pipe"
-  ),
-
-  "placeglacier" => array(
-    "DateTime",
-    "WatYr",
-    "RH",
-    "Air_Temp",
-    "Pk_Wind_Speed",
-    "Pk_Wind_Dir",
-    "Wind_Speed",
-    "Wind_Dir",
-    "PP_Tipper",
-    "PC_Tipper",
-    "Snow_Depth",
-    "BP",
-    "Batt",
-    "SWU",
-    "SWL",
-    "LWU",
-    "LWL",
-    "Air_Temp_2",
-    "Snow_Depth_2"
-  ),
-
-);
-?>
+// Ensure raw_fields defaults to msg_fields if empty
+foreach ($stations as $stationName => &$station) {
+    if (empty($station['raw_fields'])) {
+        $station['raw_fields'] = $station['msg_fields'];
+    }
+}
+unset($station); // break the reference
