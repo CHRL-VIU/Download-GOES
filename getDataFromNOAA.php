@@ -1,137 +1,173 @@
 <?php
-// this script queries the NOAA server using LRGS scripts available here https://dcs1.noaa.gov/Account/Login
+// NOAA data retrieval and table update script
+// -------------------------------------------
 
-// get the creds
+// Show all errors and warnings in CLI
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Get the creds
 require 'config.php';
 
-// get the tbl field definitions
+// Get the station field definitions
 require 'tbl_defs.php';
 
-// get the functions
+// Get functions
 require 'noaa_functions.php';
 
-// get logging functions
+// Get logging functions
 require 'logging_functions.php';
 
-// update search criteria file based on provided NESID 
-// file format is: 
-// DRS_SINCE: now - 180 minutes
-// DRS_UNTIL: now
-// DCP_ADDRESS: 49A0216E
-// located at /LRGS/MessageBrowser.sc
+// ------------------------------------------------------------
+// RAW TABLE UPDATES
+// ------------------------------------------------------------
+foreach ($nesids as $stnName => $nesid) {
 
-// -------------------------------
-// Start raw table update and logging
-// -------------------------------
-foreach ($nesids as $name => $id){
-    try {
-        updateNesid(LRGS_QUERY_IN, LRGS_QUERY_OUT, $id);
-        echo "Starting the LRGS data request for station: $id\n";
+    updateNesid(LRGS_QUERY_IN, LRGS_QUERY_OUT, $nesid);
+    echo "Starting LRGS data request for station: $stnName ($nesid)\n";
 
-        $output = shell_exec(CMD);
+    $output = shell_exec(CMD);
 
-        // parseDataFromNOAA now returns all timestamps, skipped timestamps, and errors
-        $stationSummary = parseDataFromNOAA($output, $name, $fields);
+    // parseDataFromNOAA returns all timestamps, skipped, errors
+    $stationSummary = parseDataFromNOAA($output, $stnName, $stations);
 
-        $allTimestamps = $stationSummary['all_timestamps'] ?? [];
-        $skipped       = $stationSummary['skipped'] ?? [];
-        $failed        = $stationSummary['errors'] ?? [];
+    $allTimestamps = $stationSummary['all_timestamps'] ?? [];
+    $skipped       = $stationSummary['skipped'] ?? [];
+    $failed        = $stationSummary['errors'] ?? [];
 
-        // calculate successes
-        $skippedTimes = array_column($skipped, 'datetime');
-        $successes = array_diff($allTimestamps, $skippedTimes, $failed);
-        
-        // update auxiliary daily/weekly logs
-        logDailySummary($name, $successes, $skipped, $failed);
-        logWeeklySummary($name, $successes, $skipped, $failed);
+    $successes = array_diff($allTimestamps, array_merge($skipped, $failed));
 
-    } catch (Exception $e) {
-        $failed = [$e->getMessage()];
-        logDailySummary($name, [], [], $failed);
-        logWeeklySummary($name, [], [], $failed);
-        continue;
-    }
+    // Optional logging
+    // logDailySummary($stnName, $successes, $skipped, $failed);
+    // logWeeklySummary($stnName, $successes, $skipped, $failed);
 }
 
+echo "Finished raw table updates. Starting clean table updates...\n";
 
-echo "Finished the raw table update... starting the clean tables now...\n";
-// -------------------------------
-// Start Clean Table update
-// -------------------------------
+// ------------------------------------------------------------
+// CLEAN TABLE UPDATES
+// ------------------------------------------------------------
 $numRowsToClean = 240;
-$stnToKpa = array("lowercain", "cainridgerun");
+$stnToKpa      = ['lowercain', 'cainridgerun'];
 
-foreach ($nesids as $curStation => $nesid) {
-    $rawRows = getMySQLRows("raw_$curStation", $numRowsToClean);
+foreach ($nesids as $stnName => $nesid) {
+
+    // Open ONE connection per station
+    $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
+    if (mysqli_connect_errno()) {
+        echo "Failed to connect to MySQL: " . mysqli_connect_error() . "\n";
+        exit;
+    }
+
+    $rawRows = getMySQLRows("raw_$stnName", $numRowsToClean);
 
     foreach ($rawRows as $line) {
-        $filterKeys = array_flip($filterFields[$curStation]);
-        $filterArray = array_intersect_key($line, $filterKeys);
 
-        // filter invalid PC values
-        if(array_key_exists('PC', $filterArray) && abs($filterArray['PC']) > 9999){
-            $filterArray['PC'] = NULL;
-        }
+        // Select only process_fields from raw row
+        $processKeys  = array_flip($stations[$stnName]['process_fields']);
+        $processArray = array_intersect_key($line, $processKeys);
 
-        // station-specific offsets and adjustments
-        if($curStation == "uppercruickshank"){
-            $filterArray['SDepth'] = $filterArray['SDepth'] - (609.7-572.1);
-            $filterArray['SDepth'] = $filterArray['SDepth']*(sqrt(($filterArray['Temp'] + 273.15)/273.15));
-            $filterArray['PC'] = $filterArray['PC'] * 1000;
-        }
-        if($curStation == "tetrahedron"){
-            $filterArray['Rn_1'] = $filterArray['Rn_1'] * 2;
-        }
-        if($curStation == "plummerhut"){
-            $filterArray['SDepth'] = $filterArray['SDepth'] + 630;
-        }
-        if($curStation == "lowercain"){
-            $filterArray['SW'] = $filterArray['SW'] - 116;
-        }
-        if(!in_array($curStation, $stnToKpa)){
-            $filterArray['BP'] = $filterArray['BP'] / 10;
-        }
-        if($curStation == "upperskeena"){
-            $filterArray['PC'] = ($filterArray['PC'] - 11.255) * 1000;
-        }
-        if($curStation == "mountmaya"){
-            $filterArray['BP'] = ($filterArray['BP'] + 18.63203478);
-            $filterArray['Pcp1hr'] = $filterArray['Pcp1hr'] * 1000;
-        }
-        if($curStation == "placeglacier"){
-            $filterArray['SDepth'] = $filterArray['SDepth'] - 122.3;
-        }
-        if($curStation == "mountarrowsmith"){
-            $filterArray['SW'] = $filterArray['SW'] + 488;
+        // Common filtering
+        if (isset($processArray['PC']) && abs($processArray['PC']) > 9999) {
+            $processArray['PC'] = NULL;
         }
 
-        $curDateTime = $line["DateTime"];
-        $curWatYr = wtr_yr($curDateTime, 10);
+        // Station-specific adjustments
+        switch ($stnName) {
+            case 'uppercruickshank':
+                $processArray['SDepth'] = ($processArray['SDepth'] - (609.7 - 572.1))
+                                         * sqrt(($processArray['Temp'] + 273.15) / 273.15);
+                $processArray['PC'] *= 1000;
+                break;
 
-        $finalArray = array_slice($filterArray, 0, 1, TRUE) + array("WatYr" => $curWatYr) + array_slice($filterArray, 1, 20, TRUE);
+            case 'tetrahedron':
+                $processArray['Rn_1'] *= 2;
+                break;
 
-        // convert clean array to string for SQL insert
-        $string = implode("','", $finalArray);
-        $cleanNames = implode(",", $cleanFields[$curStation]);
+            case 'plummerhut':
+                $processArray['SDepth'] += 630;
+                break;
 
-        $query = "INSERT IGNORE into `clean_$curStation` ($cleanNames) values('$string')";
+            case 'lowercain':
+                $processArray['SW'] -= 116;
+                break;
 
-        $conn = mysqli_connect(MYSQLHOST, MYSQLUSER, MYSQLPASS, MYSQLDB);
+            case 'upperskeena':
+                $processArray['PC'] = ($processArray['PC'] - 11.255) * 1000;
+                break;
 
-        if (mysqli_connect_errno()) {
-            echo "Failed to connect to MySQL: " . mysqli_connect_error();
-            exit;
+            case 'mountmaya':
+                $processArray['BP'] += 18.63203478;
+                $processArray['Pcp1hr'] *= 1000;
+                break;
+
+            case 'placeglacier':
+                $processArray['SDepth'] -= 122.3;
+                break;
+
+            case 'mountarrowsmith':
+                $processArray['SW'] += 488;
+                break;
         }
 
+        // Adjust BP if needed
+        if (!in_array($stnName, $stnToKpa) && isset($processArray['BP'])) {
+            $processArray['BP'] /= 10;
+        }
+
+        // Add derived water year
+        $curDateTime = $line['DateTime'];
+        $curWatYr    = wtr_yr($curDateTime, 10);
+
+        // ----------------------------------------------------
+        // Build final array using pairwise mapping
+        // ----------------------------------------------------
+        $finalArray     = [];
+        $processFields  = $stations[$stnName]['process_fields'];
+        $cleanFields    = $stations[$stnName]['clean_fields'];
+
+        for ($i = 0; $i < count($cleanFields); $i++) {
+
+            $cleanCol = $cleanFields[$i];
+            $procCol  = $processFields[$i] ?? null;
+
+            // If this process column is 'WatYr', compute it; otherwise use processArray
+            if ($procCol === 'WatYr') {
+                $val = wtr_yr($line['DateTime'], 10);
+            } else {
+                $val = $procCol ? ($processArray[$procCol] ?? NULL) : NULL;
+            }
+
+            $finalArray[] = $val;
+        }
+
+        // ----------------------------------------------------
+        // Build SQL values safely
+        // ----------------------------------------------------
+        $values = [];
+        foreach ($finalArray as $val) {
+            if (is_null($val)) {
+                $values[] = "NULL";
+            } elseif (is_numeric($val)) {
+                $values[] = $val;
+            } else {
+                $values[] = "'" . mysqli_real_escape_string($conn, $val) . "'";
+            }
+        }
+
+        $valueString = implode(",", $values);
+        $cleanNames  = implode(",", $cleanFields);
+
+        $query = "INSERT IGNORE INTO `clean_$stnName` ($cleanNames) VALUES ($valueString)";
         if (!mysqli_query($conn, $query)) {
-            echo "Update ".$curStation." Clean Table Error description: " . mysqli_error($conn);
-            continue;
+            echo "Error updating clean_$stnName: " . mysqli_error($conn) . "\n";
         }
     }
+
+    // Close connection once per station
+    mysqli_close($conn);
 }
 
-// free result set
-mysqli_close($conn); 
-
-echo "Finished table updates for all stations.\n";
+echo "Finished clean table updates for all stations.\n";
 ?>
