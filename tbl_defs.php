@@ -134,7 +134,7 @@ $stations = [
         "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','BP','Telem','Vtx','TCase','SM','ST','Pcp1hr','Pcp_raw'],
         "raw_fields"     => [],
         "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','PYR','SM','ST','Pcp1hr','Pcp_raw','Vtx'],
-        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','BP','Batt','Soil_Moisture','Soil_Temperature','PP_Pipe','PC_Raw_Pipe']
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','BP','Solar_Rad','Soil_Moisture','Soil_Temperature','PP_Pipe','PC_Raw_Pipe','Batt']
     ],
 
     "perseverance" => [
@@ -148,7 +148,7 @@ $stations = [
         "msg_fields"     => ['DateTime','RH','Temp','Mx_Spd','Mx_Dir','WSK10mMax','WDD10mMax','Wspd','Dir','Rn_1','RnTotal','SDepth','SDcomp','SDist_Q','PYR','PYRSR','BP','Telem','Vtx','TCase','SDepth2','SDcomp2','SDist_Q2','SW','SM','ST','TA','SD','PC','VB','Ib','Vs','I_S','YB','SD2','PCTW','SWTW'],
         "raw_fields"     => [],
         "process_fields" => ['DateTime','WatYr','RH','Temp','Mx_Spd','Mx_Dir','Wspd','Dir','Rn_1','RnTotal','SDepth','BP','PYR','SM','ST','SW','PC','Vtx'],
-        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','Solar_Rad','BP','Batt','SWE','Soil_Moisture','Soil_Temperature','PC_Raw_Pipe']
+        "clean_fields"   => ['DateTime','WatYr','RH','Air_Temp','Pk_Wind_Speed','Pk_Wind_Dir','Wind_Speed','Wind_Dir','PP_Tipper','PC_Tipper','Snow_Depth','BP','Solar_Rad','Soil_Moisture','Soil_Temperature','SWE','PC_Raw_Pipe','Batt']
     ],
 
     "plummerhut" => [
