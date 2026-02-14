@@ -48,12 +48,27 @@ function parseDataFromNOAA($rawOutput, $stnname, $fieldsArray) {
 
         $lineArray = preg_split('/[\s]+/', $line);
 
-        // grab elements for datetime
         $hr = substr($lineArray[0], 13, 2);
         $yr = "20" . substr($lineArray[0], 8, 2);
         $jday = substr($lineArray[0], 10, 3);
 
-        $datetime = date("Y-m-d H:00:00", strtotime('+' . $jday . ' days', mktime($hr, 0, 0, 1, 0, $yr)) - (8*60*60));
+        // Validate numeric before using mktime
+        if (!ctype_digit($hr) || !ctype_digit($jday) || !ctype_digit(substr($yr,2,2))) {
+            $skipped[] = $lineArray[0];  // record the bad message
+            continue;                     // skip this message
+        }
+
+        // cast to integers for mktime
+        $hrInt = intval($hr);
+        $jdayInt = intval($jday);
+        $yrInt = intval($yr);
+
+        // compute datetime safely
+        $datetime = date(
+            "Y-m-d H:00:00",
+            strtotime('+' . $jdayInt . ' days', mktime($hrInt, 0, 0, 1, 0, $yrInt)) - (8*60*60)
+        );
+
         $all_timestamps[] = $datetime;
 
         // remove raw NOAA timestamp / NESID string and add datetime at front
