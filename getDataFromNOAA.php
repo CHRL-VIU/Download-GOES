@@ -113,10 +113,6 @@ foreach ($nesids as $stnName => $nesid) {
             case 'placeglacier':
                 $processArray['SDepth'] -= 122.3;
                 break;
-
-            case 'mountarrowsmith':
-                $processArray['SW'] += 488;
-                break;
         }
 
         // Adjust BP if needed
