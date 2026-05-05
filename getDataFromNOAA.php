@@ -87,6 +87,7 @@ foreach ($nesids as $stnName => $nesid) {
                 $processArray['SDepth'] = ($processArray['SDepth'] - (609.7 - 572.1))
                                          * sqrt(($processArray['Temp'] + 273.15) / 273.15);
                 $processArray['PC'] *= 1000;
+                $processArray['SWE'] *= $processArray['SWE'] - 35;
                 break;
 
             case 'tetrahedron':
